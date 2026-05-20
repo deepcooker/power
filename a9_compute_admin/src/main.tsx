@@ -1,7 +1,8 @@
 import { createRoot } from 'react-dom/client';
 import { useEffect, useMemo, useState } from 'react';
 import { api } from './api';
-import { estimateWorkflowCost, workflowRunRecords, workflowTemplates } from './workflowApi';
+import { estimateWorkflowCost, workflowApi, workflowRunRecords, workflowTemplates } from './workflowApi';
+import type { WorkflowCostEstimate, WorkflowRunPayload } from './workflowApi';
 import type { ComputeInstance, ComputePayload, GpuResource } from './types';
 import type { ReactNode } from 'react';
 import './styles.css';
@@ -672,7 +673,17 @@ function WorkflowRunPage() {
   const [publishOpen, setPublishOpen] = useState(false);
   const [resultMode, setResultMode] = useState<'idle' | 'running' | 'done'>('idle');
   const promptChips = ['电影感', '慢速推镜', '浅景深', '柔和逆光', '商业质感'];
-  const cost = estimateWorkflowCost({ templateId: 'ltx-video', mode: 'image_to_video', prompt: '电影感镜头，人物回头，柔和光线，浅景深，细节丰富', ratio: '9:16', quality: '1080P', durationSeconds: 6, imageCount: 2, styleStrength: 'medium', seed: '238471' });
+  const runPayload: WorkflowRunPayload = { templateId: 'ltx-video', mode: 'image_to_video', prompt: '电影感镜头，人物回头，柔和光线，浅景深，细节丰富', ratio: '9:16', quality: '1080P', durationSeconds: 6, imageCount: 2, styleStrength: 'medium', seed: '238471' };
+  const [cost, setCost] = useState<WorkflowCostEstimate>(() => estimateWorkflowCost(runPayload));
+  useEffect(() => {
+    let alive = true;
+    workflowApi.estimate(runPayload).then((nextCost) => {
+      if (alive) setCost(nextCost);
+    }).catch(() => undefined);
+    return () => {
+      alive = false;
+    };
+  }, []);
   return (
     <main className="workflow-run-page">
       <header className="workflow-studio-top">

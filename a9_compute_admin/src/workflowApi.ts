@@ -52,6 +52,24 @@ export type WorkflowRunPayload = {
   seed?: string;
 };
 
+type ApiEnvelope<T> = {
+  err_code: number;
+  data: T;
+  error?: string;
+};
+
+async function workflowJson<T>(url: string, init?: RequestInit): Promise<T> {
+  const response = await fetch(url, {
+    cache: 'no-store',
+    headers: { 'Content-Type': 'application/json', ...(init?.headers ?? {}) },
+    ...init,
+  });
+  if (!response.ok) throw new Error(`${response.status} ${response.statusText}`);
+  const payload = (await response.json()) as ApiEnvelope<T>;
+  if (payload.err_code !== 0) throw new Error(payload.error ?? `api err_code=${payload.err_code}`);
+  return payload.data;
+}
+
 export const workflowTemplates: WorkflowTemplate[] = [
   {
     id: 'ltx-video',
@@ -221,3 +239,18 @@ export async function createWorkflowRun(payload: WorkflowRunPayload): Promise<Wo
     resultType: payload.mode === 'text_to_image' ? 'image' : 'video',
   };
 }
+
+export const workflowApi = {
+  templates: () => workflowJson<{ items: WorkflowTemplate[] }>('/api/workflows/templates'),
+  runs: () => workflowJson<{ items: WorkflowRunRecord[] }>('/api/workflows/runs'),
+  estimate: (payload: WorkflowRunPayload) =>
+    workflowJson<WorkflowCostEstimate>('/api/workflows/estimate', {
+      method: 'POST',
+      body: JSON.stringify(payload),
+    }),
+  createRun: (payload: WorkflowRunPayload) =>
+    workflowJson<WorkflowRunRecord>('/api/workflows/runs', {
+      method: 'POST',
+      body: JSON.stringify(payload),
+    }),
+};
