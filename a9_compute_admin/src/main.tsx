@@ -2,7 +2,7 @@ import { createRoot } from 'react-dom/client';
 import { useEffect, useMemo, useState } from 'react';
 import { api } from './api';
 import { estimateWorkflowCost, workflowApi, workflowRunRecords, workflowTemplates } from './workflowApi';
-import type { WorkflowCostEstimate, WorkflowRunPayload } from './workflowApi';
+import type { WorkflowCostEstimate, WorkflowRunPayload, WorkflowRunRecord } from './workflowApi';
 import type { ComputeInstance, ComputePayload, GpuResource } from './types';
 import type { ReactNode } from 'react';
 import './styles.css';
@@ -71,10 +71,11 @@ const workflowShowcase = [
   ['主播口播开场', '数字人', '00:12', 'avatar'],
   ['潮玩盲盒海报', '文生图', '1 张', 'video'],
 ];
-const workflowRuns = workflowRunRecords.map((run) => {
+function workflowRunToCard(run: WorkflowRunRecord) {
   const template = workflowTemplates.find((item) => item.id === run.templateId);
   return [run.title, run.statusText, run.durationText, run.costText, run.createdAt, workflowCoverClass[template?.cover ?? ''] ?? 'video'];
-});
+}
+const workflowRuns = workflowRunRecords.map(workflowRunToCard);
 const imageRows = [
   { uuid: 'image-e55db9ae41', name: 'new0415', size: '20.78GB', status: '就绪', share: '私有镜像', source: '灵渠', cache: '重庆区', base: 'Miniconda  conda3\nPython  3.10(ubuntu22.04)\nCUDA  11.8', created: '2026-04-15 13:30:50' },
   { uuid: 'image-ef24180470', name: 'policy2026', size: '14.97GB', status: '就绪', share: '私有镜像', source: '灵渠', cache: '重庆区', base: 'Miniconda  conda3\nPython  3.10(ubuntu22.04)\nCUDA  11.8', created: '2026-01-17 01:11:09' },
@@ -729,6 +730,18 @@ function WorkflowNodes() {
 
 function WorkflowRunsPage() {
   const [detail, setDetail] = useState<string[]>([]);
+  const [runs, setRuns] = useState<string[][]>(workflowRuns);
+  useEffect(() => {
+    let alive = true;
+    workflowApi.runs().then(({ items }) => {
+      if (alive) {
+        setRuns(items.map(workflowRunToCard));
+      }
+    }).catch(() => undefined);
+    return () => {
+      alive = false;
+    };
+  }, []);
   const queue = [
     ['#WF-240518', '图生视频', '生成中', '68%'],
     ['#WF-240519', '文生图', '排队中', '预计 1 分钟'],
@@ -752,7 +765,7 @@ function WorkflowRunsPage() {
         <article><h2>最近队列</h2>{queue.map((item) => <div key={item[0]}><span>{item[0]}</span><b>{item[1]}</b><em>{item[2]} · {item[3]}</em></div>)}</article>
       </section>
       <section className="workflow-runs-grid">
-        {workflowRuns.map((run) => (
+        {runs.map((run) => (
           <article className="workflow-run-card" key={run[0] + run[4]}>
             <div className={`workflow-cover ${run[5]}`}><span>{run[1]}</span><strong>{run[0]}</strong></div>
             <div><h2>{run[0]}</h2><p>{run[4]}</p><span>耗时 {run[2]}</span><span>{run[3]}</span></div>
