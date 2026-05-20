@@ -1,7 +1,7 @@
 import { createRoot } from 'react-dom/client';
 import { useEffect, useMemo, useState } from 'react';
 import { api } from './api';
-import { estimateWorkflowCost } from './workflowApi';
+import { estimateWorkflowCost, workflowTemplates } from './workflowApi';
 import type { ComputeInstance, ComputePayload, GpuResource } from './types';
 import type { ReactNode } from 'react';
 import './styles.css';
@@ -40,14 +40,23 @@ const deploymentRows = [
   { id: 'edbb3ea075', name: 'vc-train', type: 'ReplicaSet', region: '重庆A区', gpu: 'RTX 2080 Ti x2', copies: ['0', '0', '77522', '0'], pack: '未购买', status: '部署中', created: '2024-10-21\n13:57:56' },
   { id: '6c06dea33c', name: '素材清洗-OCR', type: 'ReplicaSet', region: '西北企业区', gpu: 'RTX 3080x2', copies: ['0', '0', '1258', '0'], pack: 'RTX 3080x2：剩29分\n查看使用详情', status: '部署中', created: '2024-09-12\n10:02:12' },
 ];
-const workflowCards = [
-  ['LTX2.3 图生视频', '上传角色图，一键生成电影感运镜短片', '图生视频', '8.6k', '12算力币/次', 'video', '精选'],
-  ['Wan2.2 文生视频', '输入剧情提示词，生成高质感商业视频镜头', '文生视频', '6.9k', '18算力币/次', 'cinema', '热门'],
-  ['商品图动态展示', '电商主图转 5 秒卖点视频，适合批量投放', '商品营销', '5.1k', '9算力币/次', 'product', '商用'],
-  ['数字人口播片段', '上传人像和口播文案，生成竖版短视频', '数字人', '4.8k', '15算力币/次', 'avatar', '新'],
-  ['赛博风格转绘', '普通照片转赛博朋克风图像和视频封面', '风格化', '9.2k', '6算力币/次', 'cyber', '爆款'],
-  ['漫画分镜生成', '提示词生成连续分镜，支持二次编辑', '图像设计', '3.7k', '5算力币/次', 'comic', '精选'],
-];
+const workflowCoverClass: Record<string, string> = {
+  'workflow-ltx-video': 'video',
+  'workflow-wan-video': 'cinema',
+  'workflow-product-video': 'product',
+  'workflow-avatar': 'avatar',
+  'workflow-cyber-style': 'cyber',
+  'workflow-comic-storyboard': 'comic',
+};
+const workflowCards = workflowTemplates.map((item) => [
+  item.title,
+  item.summary,
+  item.category,
+  item.runCount,
+  item.priceText,
+  workflowCoverClass[item.cover] ?? 'video',
+  item.tags[0] ?? '精选',
+]);
 const workflowFeatured = [
   ['爆款短视频', '一张人物图生成 6 秒竖版运镜', '今日 2,186 次运行', 'video'],
   ['商品种草片', '主图、卖点词、背景音乐一键成片', '商家模板', 'product'],
