@@ -687,12 +687,14 @@ function WorkflowDetailPage() {
 }
 
 function WorkflowRunPage() {
+  const templates = useWorkflowTemplates();
+  const template = templates.find((item) => item.id === 'ltx-video') ?? workflowTemplates[0];
   const [publishOpen, setPublishOpen] = useState(false);
   const [resultMode, setResultMode] = useState<'idle' | 'running' | 'done'>('idle');
   const [submitting, setSubmitting] = useState(false);
   const [activeRun, setActiveRun] = useState<WorkflowRunRecord>();
   const promptChips = ['电影感', '慢速推镜', '浅景深', '柔和逆光', '商业质感'];
-  const runPayload: WorkflowRunPayload = { templateId: 'ltx-video', mode: 'image_to_video', prompt: '电影感镜头，人物回头，柔和光线，浅景深，细节丰富', ratio: '9:16', quality: '1080P', durationSeconds: 6, imageCount: 2, styleStrength: 'medium', seed: '238471' };
+  const runPayload: WorkflowRunPayload = useMemo(() => ({ templateId: template.id, mode: template.mode, prompt: '电影感镜头，人物回头，柔和光线，浅景深，细节丰富', ratio: '9:16', quality: '1080P', durationSeconds: 6, imageCount: 2, styleStrength: 'medium', seed: '238471' }), [template.id, template.mode]);
   const [cost, setCost] = useState<WorkflowCostEstimate>(() => estimateWorkflowCost(runPayload));
   useEffect(() => {
     let alive = true;
@@ -702,7 +704,7 @@ function WorkflowRunPage() {
     return () => {
       alive = false;
     };
-  }, []);
+  }, [runPayload]);
   const submitRun = () => {
     if (resultMode === 'running') {
       setResultMode('done');
@@ -724,7 +726,7 @@ function WorkflowRunPage() {
   return (
     <main className="workflow-run-page">
       <header className="workflow-studio-top">
-        <div><b>LTX2.3 图生视频</b><span>自动保存 · 版本 v1.8 · 黑盒加速节点</span></div>
+        <div><b>{template.title}</b><span>自动保存 · 版本 v1.8 · 黑盒加速节点</span></div>
         <nav><button>另存为模板</button><button>导出(API)</button><button onClick={() => setPublishOpen(true)}>发布</button><a href="/compute/workflow-runs">运行记录</a></nav>
       </header>
       <div className="workflow-studio">
@@ -746,7 +748,7 @@ function WorkflowRunPage() {
           <label><span>Seed</span><input value="238471" readOnly /></label>
         </aside>
         <section className="workflow-canvas-panel">
-          <div className={`workflow-result-stage ${resultMode}`}><span>{resultMode === 'done' ? '生成完成' : resultMode === 'running' ? '生成中 68%' : '等待生成'}</span><strong>{resultMode === 'done' ? '竖版短片结果' : 'LTX2.3 预览区'}</strong><p>{resultMode === 'done' ? '已生成 6 秒竖版视频，可下载或发布。' : resultMode === 'running' ? '弹性算力实例已启动，工作流正在执行。' : '运行后将在这里显示视频结果和中间帧。'}</p></div>
+          <div className={`workflow-result-stage ${resultMode}`}><span>{resultMode === 'done' ? '生成完成' : resultMode === 'running' ? '生成中 68%' : '等待生成'}</span><strong>{resultMode === 'done' ? '竖版短片结果' : `${template.title} 预览区`}</strong><p>{resultMode === 'done' ? '已生成 6 秒竖版视频，可下载或发布。' : resultMode === 'running' ? '弹性算力实例已启动，工作流正在执行。' : '运行后将在这里显示视频结果和中间帧。'}</p></div>
           <div className="workflow-result-toolbar"><button>下载</button><button>设为封面</button><button>复制参数</button><button onClick={() => setPublishOpen(true)}>发布案例</button></div>
           <div className="workflow-frame-strip">{['首帧', '中间帧', '尾帧', '封面'].map((item) => <span key={item}>{item}</span>)}</div>
           <WorkflowNodes />
@@ -759,6 +761,7 @@ function WorkflowRunPage() {
           <p><span>推荐 GPU</span><strong>RTX 4090 / 5090</strong></p>
           <p><span>地区</span><strong>北京B区 / 重庆A区</strong></p>
           <p><span>预计耗时</span><strong>60-120 秒</strong></p>
+          <p><span>模板价格</span><strong>{template.priceText}</strong></p>
           <p><span>本次费用</span><strong>{cost.total} 算力币</strong></p>
           <p><span>账户余额</span><strong>1303.96</strong></p>
           <div className="workflow-cost-confirm"><span>预扣费用</span><strong>{cost.total} 算力币</strong><em>失败自动退回</em></div>
