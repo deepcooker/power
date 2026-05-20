@@ -78,6 +78,7 @@ function App() {
   const isNetdiskPage = currentPath === '/compute/netdisk';
   const isImageDetailPage = currentPath === '/compute/images/detail';
   const isImagesPage = currentPath === '/compute/images';
+  const isPublicDataDetailPage = currentPath === '/compute/public-data/detail';
   const isPublicDataPage = currentPath === '/compute/public-data';
   const isBillingPage = currentPath === '/compute/billing';
   const isOrdersPage = currentPath === '/compute/billing/orders';
@@ -171,6 +172,10 @@ function App() {
 
   if (isNetdiskPage) {
     return <Shell data={data}><NetdiskPage /></Shell>;
+  }
+
+  if (isPublicDataDetailPage) {
+    return <Shell data={data}><PublicDataDetailPage /></Shell>;
   }
 
   if (isPublicDataPage) {
@@ -2497,22 +2502,118 @@ function FastFileStorePage() {
 }
 
 function PublicDataPage() {
+  const [modal, setModal] = useState<'mount' | 'copy' | ''>('');
   return (
     <div className="console-layout">
       <ConsoleSideBar current="publicData" />
       <main className="console-main public-main">
         <div className="public-title"><h1>公开数据</h1><div className="search-like public-search">搜索数据集 <span>⌕</span></div></div>
-        <a className="usage-link">如何使用公开数据？</a>
+        <div className="public-toolbar"><a className="usage-link" onClick={() => setModal('mount')}>如何使用公开数据？</a><button onClick={() => setModal('copy')}>复制挂载路径</button><button>申请发布数据</button></div>
         <div className="public-table">
           <div className="public-head"><span>数据名称</span><span>实例中路径</span><span>大小</span><span>类型</span><span>发布方</span><span>简介</span></div>
           {publicDataRows.map((row) => (
             <div className="public-row" key={row[0]}>
-              <span>{row[0]}</span><span>{row[1]} <a>▣</a></span><span>{row[2]}</span><span>{row[3]}</span><span>{row[4]}</span><span>{row[5]}</span>
+              <span><a href="/compute/public-data/detail">{row[0]}</a></span><span>{row[1]} <a onClick={() => setModal('copy')}>▣</a></span><span>{row[2]}</span><span>{row[3]}</span><span>{row[4]}</span><span>{row[5]}</span>
             </div>
           ))}
         </div>
         <div className="console-pager">共 39 条 <span>‹</span><b>1</b><b className="dark">2</b><b className="dark">3</b><b className="dark">4</b><span>›</span><button>10条/页 ⌄</button> 前往 <input value="1" readOnly /> 页</div>
       </main>
+      {modal && <PublicDataModal type={modal} onClose={() => setModal('')} />}
+    </div>
+  );
+}
+
+function PublicDataDetailPage() {
+  const [modal, setModal] = useState<'mount' | 'copy' | ''>('');
+  const dataRow = publicDataRows[0];
+  const files = [
+    ['sensor/train', '目录', '421.2GB', '训练集传感器数据'],
+    ['sensor/val', '目录', '118.4GB', '验证集传感器数据'],
+    ['annotations', '目录', '43.8GB', '标注文件'],
+    ['README.md', '文件', '18KB', '数据集说明'],
+  ];
+  const examples = [
+    ['查看路径', `ls ${dataRow[1]}`],
+    ['软链到工作目录', `ln -s ${dataRow[1]} /root/autodl-tmp/argoverse2`],
+    ['Python读取', `python train.py --data ${dataRow[1]}/sensor/train`],
+  ];
+  return (
+    <div className="console-layout">
+      <ConsoleSideBar current="publicData" />
+      <main className="public-detail-main">
+        <div className="compute-detail-head">
+          <div>
+            <div className="rent-crumb">公开数据 / 数据详情</div>
+            <h1>{dataRow[0]}</h1>
+            <p>{dataRow[2]} · {dataRow[3]} · 发布方 {dataRow[4]}</p>
+          </div>
+          <div><button onClick={() => setModal('copy')}>复制路径</button><button onClick={() => setModal('mount')}>挂载说明</button><button onClick={() => { window.location.href = '/compute/public-data'; }}>返回列表</button></div>
+        </div>
+        <section className="public-detail-hero">
+          <div>
+            <span className="compute-state">只读挂载</span>
+            <h2>{dataRow[1]}</h2>
+            <p>公开数据会自动挂载到同地区实例的 `/root/autodl-pub` 目录。数据为只读模式，不占用个人文件存储容量，适合训练、评测和快速复现实验。</p>
+            <div><button onClick={() => setModal('copy')}>复制实例路径</button><button onClick={() => setModal('mount')}>查看使用方式</button><button>收藏数据集</button></div>
+          </div>
+          <aside><span>数据大小</span><strong>{dataRow[2]}</strong><small>平台维护，用户只读</small></aside>
+        </section>
+        <div className="compute-detail-grid">
+          <section className="compute-card">
+            <div className="compute-card-title"><h2>目录结构</h2><span>实例内可见路径</span></div>
+            <div className="public-file-table">
+              <div className="head"><span>名称</span><span>类型</span><span>大小</span><span>说明</span></div>
+              {files.map((row) => <div className="row" key={row[0]}>{row.map((cell) => <span key={cell}>{cell}</span>)}</div>)}
+            </div>
+          </section>
+          <section className="compute-card">
+            <div className="compute-card-title"><h2>基础信息</h2><span>数据集元信息</span></div>
+            <div className="image-info-list">
+              {[
+                ['数据名称', dataRow[0]],
+                ['实例路径', dataRow[1]],
+                ['数据类型', dataRow[3]],
+                ['发布方', dataRow[4]],
+                ['访问方式', '实例内只读挂载'],
+                ['计费规则', '不计入个人存储容量'],
+              ].map((row) => <p key={row[0]}><span>{row[0]}</span><strong>{row[1]}</strong></p>)}
+            </div>
+          </section>
+        </div>
+        <section className="compute-card">
+          <div className="compute-card-title"><h2>使用示例</h2><span>复制到实例终端执行</span></div>
+          <div className="public-example-grid">
+            {examples.map((row) => <article key={row[0]}><strong>{row[0]}</strong><pre>{row[1]}</pre><button>复制</button></article>)}
+          </div>
+        </section>
+      </main>
+      {modal && <PublicDataModal type={modal} onClose={() => setModal('')} />}
+    </div>
+  );
+}
+
+function PublicDataModal({ type, onClose }: { type: 'mount' | 'copy'; onClose: () => void }) {
+  const isCopy = type === 'copy';
+  return (
+    <div className="modal-mask">
+      <section className="compute-action-modal public-data-modal">
+        <header><h2>{isCopy ? '复制公开数据路径' : '公开数据使用说明'}</h2><button onClick={onClose}>×</button></header>
+        {isCopy ? (
+          <div className="compute-action-form">
+            <label><span>实例路径</span><input value="/root/autodl-pub/argoverse2.0-sensor" readOnly /></label>
+            <label><span>软链命令</span><input value="ln -s /root/autodl-pub/argoverse2.0-sensor /root/autodl-tmp/argoverse2" readOnly /></label>
+            <p>公开数据为只读目录，训练输出请写入 `/root/autodl-tmp` 或文件存储。</p>
+          </div>
+        ) : (
+          <div className="public-help-body">
+            <article><b>1</b><div><strong>创建同区实例</strong><p>公开数据会挂载到支持该数据集的实例地区。</p></div></article>
+            <article><b>2</b><div><strong>进入实例终端</strong><p>通过 SSH 或 JupyterLab 查看 `/root/autodl-pub`。</p></div></article>
+            <article><b>3</b><div><strong>读取数据训练</strong><p>直接使用路径读取，输出文件写入个人数据盘。</p></div></article>
+          </div>
+        )}
+        <footer><button onClick={onClose}>关闭</button><button className="primary" onClick={onClose}>{isCopy ? '复制' : '知道了'}</button></footer>
+      </section>
     </div>
   );
 }
