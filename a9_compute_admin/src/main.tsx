@@ -124,6 +124,7 @@ function App() {
   const [region, setRegion] = useState('西北B区');
   const [gpu, setGpu] = useState('');
   const currentPath = window.location.pathname.replace(/\/$/, '');
+  const isMobileConsolePage = currentPath === '/compute/mobile-console';
   const isHomePage = currentPath === '/compute/home';
   const isWorkflowRunsPage = currentPath === '/compute/workflow-runs';
   const isMyWorkflowsPage = currentPath === '/compute/workflows/mine';
@@ -192,6 +193,10 @@ function App() {
     });
     return [...(filtered.length ? filtered : rows)].sort((a, b) => resourceRank(a) - resourceRank(b));
   }, [data, gpu, region]);
+
+  if (isMobileConsolePage) {
+    return <MobileConsolePage />;
+  }
 
   if (isHomePage) {
     return <Shell data={data}><HomePage /></Shell>;
@@ -370,6 +375,158 @@ function App() {
         setRegion={setRegion}
       />
     </Shell>
+  );
+}
+
+type MobileFileItem = {
+  name: string;
+  path: string;
+  type: 'dir' | 'file';
+  size: number;
+  modified: string;
+};
+
+type MobileTerminalResult = {
+  command: string;
+  cwd: string;
+  target: string;
+  exit_code: number;
+  stdout: string;
+  stderr: string;
+  finished_at: string;
+};
+
+async function mobileApi<T>(url: string, init?: RequestInit): Promise<T> {
+  const response = await fetch(url, {
+    cache: 'no-store',
+    headers: { 'Content-Type': 'application/json', ...(init?.headers ?? {}) },
+    ...init,
+  });
+  const payload = await response.json();
+  if (!response.ok || payload.err_code !== 0) {
+    throw new Error(payload.detail ?? payload.error ?? `request failed: ${response.status}`);
+  }
+  return payload.data as T;
+}
+
+function MobileConsolePage() {
+  const [tab, setTab] = useState<'terminal' | 'files'>('terminal');
+  const [cwd, setCwd] = useState('.');
+  const [command, setCommand] = useState('pwd && ls -la');
+  const [target, setTarget] = useState<'local' | 'ssh'>('local');
+  const [running, setRunning] = useState(false);
+  const [history, setHistory] = useState<MobileTerminalResult[]>([]);
+  const [filePath, setFilePath] = useState('.');
+  const [files, setFiles] = useState<MobileFileItem[]>([]);
+  const [parent, setParent] = useState<string | null>(null);
+  const [root, setRoot] = useState('');
+  const [preview, setPreview] = useState<{ path: string; content: string }>();
+  const [error, setError] = useState('');
+
+  const loadFiles = async (path = filePath) => {
+    setError('');
+    try {
+      const data = await mobileApi<{ path: string; root: string; parent: string | null; items: MobileFileItem[] }>(`/api/mobile/files?path=${encodeURIComponent(path)}`);
+      setFilePath(data.path);
+      setCwd(data.path);
+      setRoot(data.root);
+      setParent(data.parent);
+      setFiles(data.items);
+      setPreview(undefined);
+    } catch (err) {
+      setError(String(err));
+    }
+  };
+
+  useEffect(() => {
+    void loadFiles('.');
+  }, []);
+
+  const runCommand = async () => {
+    setRunning(true);
+    setError('');
+    try {
+      const result = await mobileApi<MobileTerminalResult>('/api/mobile/terminal/run', {
+        method: 'POST',
+        body: JSON.stringify({ command, cwd, target }),
+      });
+      setHistory((items) => [result, ...items].slice(0, 20));
+      setCwd(result.cwd);
+      setFilePath(result.cwd);
+    } catch (err) {
+      setError(String(err));
+    } finally {
+      setRunning(false);
+    }
+  };
+
+  const readFile = async (path: string) => {
+    setError('');
+    try {
+      const data = await mobileApi<{ path: string; content: string }>(`/api/mobile/files/read?path=${encodeURIComponent(path)}`);
+      setPreview(data);
+      setTab('files');
+    } catch (err) {
+      setError(String(err));
+    }
+  };
+
+  const quickCommands = ['ls -lah', 'pwd', 'df -h', 'free -h', 'ps aux | head'];
+
+  return (
+    <main className="mobile-console-page">
+      <header className="mobile-console-head">
+        <div><strong>灵渠 H5 控制台</strong><span>手机端命令行 / 文件块</span></div>
+        <a href="/compute">退出</a>
+      </header>
+      <section className="mobile-status-card">
+        <span>当前目录</span>
+        <strong>{cwd}</strong>
+        <small>{target === 'ssh' ? 'SSH target via MOBILE_SSH_TARGET' : root || 'workspace'}</small>
+      </section>
+      <nav className="mobile-console-tabs">
+        <button className={tab === 'terminal' ? 'active' : ''} onClick={() => setTab('terminal')}>命令行</button>
+        <button className={tab === 'files' ? 'active' : ''} onClick={() => setTab('files')}>文件块</button>
+      </nav>
+      {error && <div className="mobile-console-error">{error}</div>}
+      {tab === 'terminal' && (
+        <section className="mobile-terminal-panel">
+          <label><span>工作目录</span><input value={cwd} onChange={(event) => setCwd(event.target.value)} /></label>
+          <div className="mobile-target-switch">
+            <button className={target === 'local' ? 'active' : ''} onClick={() => setTarget('local')}>本机</button>
+            <button className={target === 'ssh' ? 'active' : ''} onClick={() => setTarget('ssh')}>SSH</button>
+          </div>
+          <textarea value={command} onChange={(event) => setCommand(event.target.value)} rows={4} />
+          <div className="mobile-command-chips">{quickCommands.map((item) => <button key={item} onClick={() => setCommand(item)}>{item}</button>)}</div>
+          <button className="mobile-run-button" onClick={runCommand} disabled={running}>{running ? '执行中...' : '执行命令'}</button>
+          <div className="mobile-terminal-history">
+            {history.length === 0 && <div className="mobile-empty-terminal">输入命令后，输出会显示在这里。</div>}
+            {history.map((item) => (
+              <article className={item.exit_code === 0 ? 'ok' : 'fail'} key={item.finished_at + item.command}>
+                <header><b>$ {item.command}</b><span>{item.exit_code === 0 ? 'OK' : `Exit ${item.exit_code}`}</span></header>
+                <pre>{[item.stdout, item.stderr].filter(Boolean).join('\n') || '(no output)'}</pre>
+              </article>
+            ))}
+          </div>
+        </section>
+      )}
+      {tab === 'files' && (
+        <section className="mobile-files-panel">
+          <div className="mobile-path-row"><input value={filePath} onChange={(event) => setFilePath(event.target.value)} /><button onClick={() => loadFiles(filePath)}>打开</button></div>
+          {parent && <button className="mobile-parent-button" onClick={() => loadFiles(parent)}>返回上级</button>}
+          <div className="mobile-file-list">
+            {files.map((item) => (
+              <button className={item.type} key={item.path} onClick={() => item.type === 'dir' ? loadFiles(item.path) : readFile(item.path)}>
+                <b>{item.type === 'dir' ? '▣' : '▤'}</b>
+                <span>{item.name}</span>
+                <small>{item.type === 'dir' ? '目录' : `${Math.ceil(item.size / 1024)} KB`} · {item.modified}</small>
+              </button>
+            ))}
+          </div>
+          {preview && <article className="mobile-file-preview"><header><b>{preview.path}</b><button onClick={() => setPreview(undefined)}>关闭</button></header><pre>{preview.content}</pre></article>}
+        </section>
+      )}
+    </main>
   );
 }
 
