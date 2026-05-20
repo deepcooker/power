@@ -1,7 +1,7 @@
 import { createRoot } from 'react-dom/client';
 import { useEffect, useMemo, useState } from 'react';
 import { api } from './api';
-import { estimateWorkflowCost, workflowTemplates } from './workflowApi';
+import { estimateWorkflowCost, workflowRunRecords, workflowTemplates } from './workflowApi';
 import type { ComputeInstance, ComputePayload, GpuResource } from './types';
 import type { ReactNode } from 'react';
 import './styles.css';
@@ -76,12 +76,10 @@ const workflowReadiness = [
   ['创作记录', '86%', '任务筛选、详情、失败原因、复跑'],
   ['发布管理', '83%', '新建、版本、分享、审核、收益'],
 ];
-const workflowRuns = [
-  ['LTX2.3 图生视频', '生成成功', '00:01:48', '12算力币', '2026-05-20 17:18', 'video'],
-  ['商品图动态展示', '生成中', '00:00:36', '9算力币', '2026-05-20 17:11', 'product'],
-  ['Wan2.2 文生视频', '排队中', '-', '18算力币', '2026-05-20 17:02', 'cinema'],
-  ['赛博风格转绘', '生成失败', '00:00:52', '0算力币', '2026-05-20 16:44', 'cyber'],
-];
+const workflowRuns = workflowRunRecords.map((run) => {
+  const template = workflowTemplates.find((item) => item.id === run.templateId);
+  return [run.title, run.statusText, run.durationText, run.costText, run.createdAt, workflowCoverClass[template?.cover ?? ''] ?? 'video'];
+});
 const imageRows = [
   { uuid: 'image-e55db9ae41', name: 'new0415', size: '20.78GB', status: '就绪', share: '私有镜像', source: '灵渠', cache: '重庆区', base: 'Miniconda  conda3\nPython  3.10(ubuntu22.04)\nCUDA  11.8', created: '2026-04-15 13:30:50' },
   { uuid: 'image-ef24180470', name: 'policy2026', size: '14.97GB', status: '就绪', share: '私有镜像', source: '灵渠', cache: '重庆区', base: 'Miniconda  conda3\nPython  3.10(ubuntu22.04)\nCUDA  11.8', created: '2026-01-17 01:11:09' },
