@@ -1,7 +1,7 @@
 import { createRoot } from 'react-dom/client';
 import { useEffect, useMemo, useState } from 'react';
 import { api } from './api';
-import { estimateWorkflowCost, workflowApi, workflowRunRecords, workflowTemplates } from './workflowApi';
+import { createWorkflowRun, estimateWorkflowCost, workflowApi, workflowRunRecords, workflowTemplates } from './workflowApi';
 import type { WorkflowCostEstimate, WorkflowRunPayload, WorkflowRunRecord } from './workflowApi';
 import type { ComputeInstance, ComputePayload, GpuResource } from './types';
 import type { ReactNode } from 'react';
@@ -661,6 +661,8 @@ function WorkflowDetailPage() {
 function WorkflowRunPage() {
   const [publishOpen, setPublishOpen] = useState(false);
   const [resultMode, setResultMode] = useState<'idle' | 'running' | 'done'>('idle');
+  const [submitting, setSubmitting] = useState(false);
+  const [activeRun, setActiveRun] = useState<WorkflowRunRecord>();
   const promptChips = ['电影感', '慢速推镜', '浅景深', '柔和逆光', '商业质感'];
   const runPayload: WorkflowRunPayload = { templateId: 'ltx-video', mode: 'image_to_video', prompt: '电影感镜头，人物回头，柔和光线，浅景深，细节丰富', ratio: '9:16', quality: '1080P', durationSeconds: 6, imageCount: 2, styleStrength: 'medium', seed: '238471' };
   const [cost, setCost] = useState<WorkflowCostEstimate>(() => estimateWorkflowCost(runPayload));
@@ -673,6 +675,24 @@ function WorkflowRunPage() {
       alive = false;
     };
   }, []);
+  const submitRun = () => {
+    if (resultMode === 'running') {
+      setResultMode('done');
+      return;
+    }
+    if (resultMode === 'done') {
+      setResultMode('idle');
+      setActiveRun(undefined);
+      return;
+    }
+    setSubmitting(true);
+    workflowApi.createRun(runPayload).catch(() => createWorkflowRun(runPayload)).then((run) => {
+      setActiveRun(run);
+      setResultMode('running');
+    }).finally(() => {
+      setSubmitting(false);
+    });
+  };
   return (
     <main className="workflow-run-page">
       <header className="workflow-studio-top">
@@ -707,13 +727,14 @@ function WorkflowRunPage() {
         <aside className="workflow-run-config">
           <h2>运行配置</h2>
           <div className="workflow-queue-card"><span>当前队列</span><strong>{resultMode === 'running' ? '3 / 12' : '空闲'}</strong><p>{resultMode === 'running' ? '预计 42 秒后完成' : '提交后自动分配弹性算力'}</p></div>
+          {activeRun && <p><span>任务编号</span><strong>{activeRun.id}</strong></p>}
           <p><span>推荐 GPU</span><strong>RTX 4090 / 5090</strong></p>
           <p><span>地区</span><strong>北京B区 / 重庆A区</strong></p>
           <p><span>预计耗时</span><strong>60-120 秒</strong></p>
           <p><span>本次费用</span><strong>{cost.total} 算力币</strong></p>
           <p><span>账户余额</span><strong>1303.96</strong></p>
           <div className="workflow-cost-confirm"><span>预扣费用</span><strong>{cost.total} 算力币</strong><em>失败自动退回</em></div>
-          <button onClick={() => setResultMode(resultMode === 'idle' ? 'running' : resultMode === 'running' ? 'done' : 'idle')}>{resultMode === 'idle' ? '立即运行' : resultMode === 'running' ? '查看完成态' : '再次运行'}</button>
+          <button onClick={submitRun} disabled={submitting}>{submitting ? '提交中' : resultMode === 'idle' ? '立即运行' : resultMode === 'running' ? '查看完成态' : '再次运行'}</button>
           <div className="workflow-run-actions"><button onClick={() => setPublishOpen(true)}>发布作品</button><button onClick={() => { window.location.href = '/compute/workflow-runs'; }}>记录</button></div>
           <small>提交后会创建运行记录，任务完成后自动保存结果。</small>
         </aside>
