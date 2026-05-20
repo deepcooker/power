@@ -2471,6 +2471,23 @@ button { cursor: pointer; }
   font-size: 18px;
   font-weight: 500;
 }
+.billing-page-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+}
+.billing-page-head h1 {
+  margin-bottom: 24px;
+}
+.billing-page-head button {
+  height: 32px;
+  padding: 0 14px;
+  border: 1px solid #315cff;
+  border-radius: 3px;
+  background: #315cff;
+  color: #fff;
+}
 .billing-filter {
   height: 44px;
   display: flex;
@@ -2539,6 +2556,67 @@ button { cursor: pointer; }
 }
 .billing-head.subaccounts {
   grid-template-columns: 18% 16% 22% 14% 18% 12%;
+}
+.billing-head.invoices {
+  grid-template-columns: 15% 16% 12% 13% 14% 10% 10% 10%;
+}
+.billing-head.contracts {
+  grid-template-columns: 18% 18% 16% 16% 12% 10% 10%;
+}
+.billing-data-row {
+  min-height: 52px;
+  display: grid;
+  align-items: center;
+  border-bottom: 1px solid #ebeef5;
+  color: #333;
+  line-height: 1.45;
+}
+.billing-data-row span {
+  min-width: 0;
+  padding: 0 10px;
+  overflow-wrap: anywhere;
+}
+.billing-data-row.orders {
+  grid-template-columns: 20% 16% 14% 14% 12% 12% 12%;
+}
+.billing-data-row.detail {
+  grid-template-columns: 16% 14% 12% 16% 12% 10% 10% 10%;
+}
+.billing-data-row.coupons {
+  grid-template-columns: 22% 18% 18% 18% 12% 12%;
+}
+.billing-data-row.invoices {
+  grid-template-columns: 15% 16% 12% 13% 14% 10% 10% 10%;
+}
+.billing-data-row.contracts {
+  grid-template-columns: 18% 18% 16% 16% 12% 10% 10%;
+}
+.billing-data-row .action {
+  color: #315cff;
+  cursor: pointer;
+}
+.billing-apply-modal {
+  width: 640px;
+}
+.billing-apply-form label {
+  grid-template-columns: 92px minmax(0, 1fr);
+}
+.billing-apply-form label div {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+.billing-apply-form label button {
+  height: 30px;
+  padding: 0 14px;
+  border: 1px solid #d5d9e3;
+  border-radius: 3px;
+  background: #fff;
+  color: #555;
+}
+.billing-apply-form label button.active {
+  border-color: #315cff;
+  color: #315cff;
 }
 .small-action {
   width: 92px;

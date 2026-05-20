@@ -84,6 +84,8 @@ function App() {
   const isOrdersPage = currentPath === '/compute/billing/orders';
   const isBillDetailPage = currentPath === '/compute/billing/detail';
   const isCouponsPage = currentPath === '/compute/billing/coupons';
+  const isInvoicesPage = currentPath === '/compute/billing/invoices';
+  const isContractsPage = currentPath === '/compute/billing/contracts';
   const isAccountPage = currentPath === '/compute/account/security';
   const isAccessPage = currentPath === '/compute/account/access';
   const isSubAccountPage = currentPath === '/compute/account/sub-accounts';
@@ -204,6 +206,14 @@ function App() {
 
   if (isCouponsPage) {
     return <Shell data={data}><BillingSubPage kind="coupons" /></Shell>;
+  }
+
+  if (isInvoicesPage) {
+    return <Shell data={data}><BillingSubPage kind="invoices" /></Shell>;
+  }
+
+  if (isContractsPage) {
+    return <Shell data={data}><BillingSubPage kind="contracts" /></Shell>;
   }
 
   if (isAccountPage) {
@@ -2392,8 +2402,8 @@ function ConsoleSideBar({ current }: { current: 'home' | 'instances' | 'instance
         ['账单明细', '/compute/billing/detail'],
         ['代金券', undefined],
         ['优惠券', '/compute/billing/coupons'],
-        ['发票管理', undefined],
-        ['合同', undefined],
+        ['发票管理', '/compute/billing/invoices'],
+        ['合同', '/compute/billing/contracts'],
       ].map((item, index) => <a className={billingSubIndex() === index ? 'current' : ''} href={item[1]} key={item[0]}>{item[0]}</a>)}</div>}
       {current === 'account' && <div className="billing-submenu">{[
         ['账号安全', '/compute/account/security'],
@@ -2419,6 +2429,8 @@ function billingSubIndex() {
   if (path.includes('/orders')) return 1;
   if (path.includes('/detail')) return 2;
   if (path.includes('/coupons')) return 4;
+  if (path.includes('/invoices')) return 5;
+  if (path.includes('/contracts')) return 6;
   return 0;
 }
 
@@ -2832,39 +2844,92 @@ function BillingPage() {
   );
 }
 
-function BillingSubPage({ kind }: { kind: 'orders' | 'detail' | 'coupons' }) {
+function BillingSubPage({ kind }: { kind: 'orders' | 'detail' | 'coupons' | 'invoices' | 'contracts' }) {
+  const [modal, setModal] = useState<'invoice' | 'contract' | ''>('');
   const config = {
     orders: {
       title: '我的订单',
       filter: ['创建时间：', '订单类型：全部', '订单状态：全部'],
       heads: ['订单号', '创建时间', '订单类型', '订单状态', '订单金额', '支付方式', '操作'],
+      rows: [
+        ['ORDER202605200001', '2026-05-20 16:02:11', '充值订单', '已支付', '￥500.00', '微信支付', '详情'],
+        ['ORDER202605180014', '2026-05-18 15:40:02', '算力消费', '已完成', '￥18.42', '余额扣费', '详情'],
+      ],
     },
     detail: {
       title: '账单明细',
       filter: ['账单月份：', '资源类型：全部', '计费方式：全部'],
       heads: ['账单号', '账单周期', '资源类型', '资源ID', '消费金额', '抵扣金额', '实付金额', '状态'],
+      rows: [
+        ['BILL202605200001', '2026-05', '容器实例', 'ins-941327a885', '￥18.42', '￥0.00', '￥18.42', '已出账'],
+        ['BILL202605200002', '2026-05', '镜像存储', 'image-e55db9ae41', '￥5.81', '￥0.00', '￥5.81', '计费中'],
+      ],
     },
     coupons: {
       title: '优惠券',
       filter: ['优惠券状态：全部', '获得时间：'],
       heads: ['优惠券名称', '优惠内容', '适用范围', '有效期', '状态', '操作'],
+      rows: [
+        ['新用户算力券', '满100减20', '容器实例/弹性部署', '2026-06-30', '可用', '立即使用'],
+        ['镜像存储抵扣券', '存储费用8折', '我的镜像', '2026-07-31', '可用', '立即使用'],
+      ],
+    },
+    invoices: {
+      title: '发票管理',
+      filter: ['申请时间：', '发票类型：全部', '发票状态：全部'],
+      heads: ['发票号', '申请时间', '发票类型', '抬头', '开票内容', '金额', '状态', '操作'],
+      rows: [
+        ['FP202605200001', '2026-05-20 16:12:00', '个人普通发票', '灵渠用户', '算力服务费', '￥500.00', '待开票', '查看'],
+        ['FP202604300014', '2026-04-30 10:18:22', '企业普通发票', '耀创科技', '算力服务费', '￥268.40', '已开票', '下载'],
+      ],
+    },
+    contracts: {
+      title: '合同',
+      filter: ['创建时间：', '合同类型：全部', '合同状态：全部'],
+      heads: ['合同编号', '创建时间', '合同类型', '主体', '金额', '状态', '操作'],
+      rows: [
+        ['HT202605200001', '2026-05-20 16:18:44', '算力服务合同', '耀创科技', '￥500.00', '待签署', '签署'],
+        ['HT202604160002', '2026-04-16 09:10:23', '框架服务合同', '耀创科技', '￥0.00', '已归档', '下载'],
+      ],
     },
   }[kind];
+  const isInvoice = kind === 'invoices';
+  const isContract = kind === 'contracts';
   return (
     <div className="console-layout">
       <ConsoleSideBar current="billing" />
       <main className="console-main billing-main">
-        <h1>{config.title}</h1>
+        <div className="billing-page-head"><h1>{config.title}</h1>{isInvoice && <button onClick={() => setModal('invoice')}>申请开票</button>}{isContract && <button onClick={() => setModal('contract')}>申请合同</button>}</div>
         <div className="billing-filter wide">
           {config.filter.map((item) => item.endsWith('：') ? <label key={item}>{item}</label> : <div className="select-like mini-select" key={item}>{item} <span>⌄</span></div>)}
           <div className="date-range"><span>▣</span><em>开始日期</em><b>至</b><em>结束日期</em></div>
         </div>
         <div className="billing-table">
           <div className={`billing-head ${kind}`}>{config.heads.map((item) => <span key={item}>{item}</span>)}</div>
-          <div className="empty-row">暂无数据</div>
+          {config.rows.map((row) => <div className={`billing-data-row ${kind}`} key={row[0]}>{row.map((cell, index) => <span className={index === row.length - 1 ? 'action' : ''} key={cell} onClick={() => isInvoice && index === row.length - 1 ? setModal('invoice') : isContract && index === row.length - 1 ? setModal('contract') : undefined}>{cell}</span>)}</div>)}
         </div>
-        <div className="console-pager billing-pager">共 0 条 <span>‹</span><b>1</b><span>›</span><button>10条/页 ⌄</button> 前往 <input value="1" readOnly /> 页</div>
+        <div className="console-pager billing-pager">共 {config.rows.length} 条 <span>‹</span><b>1</b><span>›</span><button>10条/页 ⌄</button> 前往 <input value="1" readOnly /> 页</div>
       </main>
+      {modal && <BillingApplyModal type={modal} onClose={() => setModal('')} />}
+    </div>
+  );
+}
+
+function BillingApplyModal({ type, onClose }: { type: 'invoice' | 'contract'; onClose: () => void }) {
+  const isInvoice = type === 'invoice';
+  return (
+    <div className="modal-mask">
+      <section className="compute-action-modal billing-apply-modal">
+        <header><h2>{isInvoice ? '申请开票' : '申请合同'}</h2><button onClick={onClose}>×</button></header>
+        <div className="compute-action-form billing-apply-form">
+          <label><span>{isInvoice ? '发票类型' : '合同类型'}</span><div><button className="active">{isInvoice ? '个人普通发票' : '算力服务合同'}</button><button>{isInvoice ? '企业专票' : '框架服务合同'}</button></div></label>
+          <label><span>{isInvoice ? '抬头' : '签约主体'}</span><input value={isInvoice ? '耀创科技' : '耀创科技有限公司'} readOnly /></label>
+          <label><span>关联订单</span><input value="ORDER202605200001 / ￥500.00" readOnly /></label>
+          <label><span>{isInvoice ? '接收邮箱' : '联系人邮箱'}</span><input value="finance@yaochuang.tech" readOnly /></label>
+          <p>{isInvoice ? '提交后将在 1-3 个工作日内处理，电子发票会发送到接收邮箱。' : '合同申请提交后可在线签署，签署完成后可在合同列表下载归档文件。'}</p>
+        </div>
+        <footer><button onClick={onClose}>取消</button><button className="primary" onClick={onClose}>提交</button></footer>
+      </section>
     </div>
   );
 }
