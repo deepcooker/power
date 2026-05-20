@@ -1,6 +1,7 @@
 import { createRoot } from 'react-dom/client';
 import { useEffect, useMemo, useState } from 'react';
 import { api } from './api';
+import { estimateWorkflowCost } from './workflowApi';
 import type { ComputeInstance, ComputePayload, GpuResource } from './types';
 import type { ReactNode } from 'react';
 import './styles.css';
@@ -664,6 +665,7 @@ function WorkflowRunPage() {
   const [publishOpen, setPublishOpen] = useState(false);
   const [resultMode, setResultMode] = useState<'idle' | 'running' | 'done'>('idle');
   const promptChips = ['电影感', '慢速推镜', '浅景深', '柔和逆光', '商业质感'];
+  const cost = estimateWorkflowCost({ templateId: 'ltx-video', mode: 'image_to_video', prompt: '电影感镜头，人物回头，柔和光线，浅景深，细节丰富', ratio: '9:16', quality: '1080P', durationSeconds: 6, imageCount: 2, styleStrength: 'medium', seed: '238471' });
   return (
     <main className="workflow-run-page">
       <header className="workflow-studio-top">
@@ -701,9 +703,9 @@ function WorkflowRunPage() {
           <p><span>推荐 GPU</span><strong>RTX 4090 / 5090</strong></p>
           <p><span>地区</span><strong>北京B区 / 重庆A区</strong></p>
           <p><span>预计耗时</span><strong>60-120 秒</strong></p>
-          <p><span>本次费用</span><strong>12 算力币</strong></p>
+          <p><span>本次费用</span><strong>{cost.total} 算力币</strong></p>
           <p><span>账户余额</span><strong>1303.96</strong></p>
-          <div className="workflow-cost-confirm"><span>预扣费用</span><strong>12 算力币</strong><em>失败自动退回</em></div>
+          <div className="workflow-cost-confirm"><span>预扣费用</span><strong>{cost.total} 算力币</strong><em>失败自动退回</em></div>
           <button onClick={() => setResultMode(resultMode === 'idle' ? 'running' : resultMode === 'running' ? 'done' : 'idle')}>{resultMode === 'idle' ? '立即运行' : resultMode === 'running' ? '查看完成态' : '再次运行'}</button>
           <div className="workflow-run-actions"><button onClick={() => setPublishOpen(true)}>发布作品</button><button onClick={() => { window.location.href = '/compute/workflow-runs'; }}>记录</button></div>
           <small>提交后会创建运行记录，任务完成后自动保存结果。</small>
