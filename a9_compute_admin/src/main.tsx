@@ -596,6 +596,9 @@ function WorkflowCard({ card }: { card: string[] }) {
 }
 
 function WorkflowDetailPage() {
+  const templates = useWorkflowTemplates();
+  const template = templates.find((item) => item.id === 'ltx-video') ?? workflowTemplates[0];
+  const basePrice = template.priceText.replace('/次', '');
   const examples = [
     ['人物回头', '柔光电影镜头，角色自然回头，背景虚化', '00:06'],
     ['商品旋转', '玻璃质感产品，慢速环绕，金色高光', '00:05'],
@@ -626,17 +629,17 @@ function WorkflowDetailPage() {
           <div><span /> <span /> <span /></div>
         </div>
         <aside>
-          <span className="workflow-badge">精选工作流</span>
-          <h1>LTX2.3 图生视频</h1>
-          <p>上传人物或商品图，输入镜头描述，自动生成电影感短视频。底层流程黑盒执行，只开放稳定参数。</p>
-          <div className="workflow-author"><b>灵渠官方</b><span>运行 8,624 · 收藏 1,209 · 评分 4.9</span></div>
-          <div className="workflow-price"><strong>12算力币/次</strong><em>预计 60-120 秒</em></div>
+          <span className="workflow-badge">{template.tags[0] ?? '精选工作流'}</span>
+          <h1>{template.title}</h1>
+          <p>{template.summary}。底层流程黑盒执行，只开放稳定参数。</p>
+          <div className="workflow-author"><b>灵渠官方</b><span>运行 {template.runCount} · 收藏 1,209 · 评分 4.9</span></div>
+          <div className="workflow-price"><strong>{template.priceText}</strong><em>预计 60-120 秒</em></div>
           <div className="workflow-actions"><a href="/compute/workflows/ltx-video/run">立即使用</a><button>收藏</button><button>复制链接</button></div>
         </aside>
       </section>
       <section className="workflow-detail-grid">
         <article><h2>适用场景</h2><p>角色动态、商品展示、剧情分镜、社媒短视频、AI 影视预览。</p></article>
-        <article><h2>输入参数</h2><p>参考图、提示词、比例、时长、清晰度、seed。节点链路和模型参数默认锁定。</p></article>
+        <article><h2>输入参数</h2><p>{template.category}模板支持参考图、提示词、比例、时长、清晰度、seed。节点链路和模型参数默认锁定。</p></article>
         <article><h2>算力配置</h2><p>优先使用 RTX 4090 / 5090，底层可通过 合作商弹性资源执行。</p></article>
       </section>
       <section className="workflow-mode-overview">
@@ -660,7 +663,7 @@ function WorkflowDetailPage() {
         </article>
         <article className="workflow-cost-card">
           <h2>费用估算</h2>
-          <div><span>基础生成</span><strong>12 算力币</strong></div>
+          <div><span>基础生成</span><strong>{basePrice}</strong></div>
           <div><span>1080P 高清</span><strong>+4 算力币</strong></div>
           <div><span>8 秒时长</span><strong>+6 算力币</strong></div>
           <p>提交时预扣，失败自动退回。批量任务会按实际成功数量结算。</p>
