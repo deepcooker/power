@@ -47,6 +47,19 @@ const workflowCards = [
   ['赛博风格转绘', '普通照片转赛博朋克风图像和视频封面', '风格化', '9.2k', '6算力币/次', 'cyber', '爆款'],
   ['漫画分镜生成', '提示词生成连续分镜，支持二次编辑', '图像设计', '3.7k', '5算力币/次', 'comic', '精选'],
 ];
+const workflowFeatured = [
+  ['爆款短视频', '一张人物图生成 6 秒竖版运镜', '今日 2,186 次运行', 'video'],
+  ['商品种草片', '主图、卖点词、背景音乐一键成片', '商家模板', 'product'],
+  ['AI 角色写真', '统一角色形象，生成封面和动态素材', '创作者精选', 'avatar'],
+];
+const workflowShowcase = [
+  ['城市雨夜追光', '文生视频', '00:08', 'cinema'],
+  ['香水瓶旋转展示', '商品营销', '00:05', 'product'],
+  ['机甲少女回眸', '图生视频', '00:06', 'cyber'],
+  ['水墨山海漫游', '风格化', '4 张', 'comic'],
+  ['主播口播开场', '数字人', '00:12', 'avatar'],
+  ['潮玩盲盒海报', '文生图', '1 张', 'video'],
+];
 const workflowRuns = [
   ['LTX2.3 图生视频', '生成成功', '00:01:48', '12算力币', '2026-05-20 17:18', 'video'],
   ['商品图动态展示', '生成中', '00:00:36', '9算力币', '2026-05-20 17:11', 'product'],
@@ -475,6 +488,19 @@ function WorkflowsPage() {
       <section className="workflow-strip">
         {['今日运行 12,486 次', '平均出片 94 秒', '热门工作流 68 个', '支持 合作商弹性算力'].map((item) => <span key={item}>{item}</span>)}
       </section>
+      <section className="workflow-featured">
+        <div className="workflow-section-head"><h2>精选模板</h2><div><button className="active">增长最快</button><button>商业投放</button><button>创作者推荐</button></div></div>
+        <div className="workflow-featured-grid">
+          {workflowFeatured.map((item, index) => (
+            <article className={`${item[3]} ${index === 0 ? 'large' : ''}`} key={item[0]} onClick={() => { window.location.href = '/compute/workflows/ltx-video'; }}>
+              <span>{item[2]}</span>
+              <strong>{item[0]}</strong>
+              <p>{item[1]}</p>
+              <button>查看模板</button>
+            </article>
+          ))}
+        </div>
+      </section>
       <section className="workflow-section-head"><h2>热门工作流</h2><div>{cats.map((cat, index) => <button className={index === 0 ? 'active' : ''} key={cat}>{cat}</button>)}<a href="/compute/workflows/mine">我的工作流</a></div></section>
       <div className="workflow-layout">
         <section className="workflow-grid">
@@ -485,6 +511,18 @@ function WorkflowsPage() {
           {workflowCards.slice(0, 5).map((card, index) => <a href="/compute/workflows/ltx-video" key={card[0]}><b>{index + 1}</b><span>{card[0]}</span><em>{card[3]}</em></a>)}
         </aside>
       </div>
+      <section className="workflow-showcase">
+        <div className="workflow-section-head"><h2>最新作品</h2><div><button className="active">全部</button><button>视频</button><button>图片</button><button>可复用</button></div></div>
+        <div>
+          {workflowShowcase.map((item) => (
+            <article className={item[3]} key={item[0]}>
+              <span>{item[1]}</span>
+              <strong>{item[0]}</strong>
+              <p>{item[2]}</p>
+            </article>
+          ))}
+        </div>
+      </section>
       <section className="workflow-scenarios">
         {[
           ['短视频投放', '商品图、剧情脚本、口播模板批量生成'],
