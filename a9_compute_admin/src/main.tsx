@@ -438,6 +438,17 @@ function HomePage() {
       <section className="home-quick">
         {cards.map((card) => <article key={card[0]}><h2>{card[0]}</h2><p>{card[1]}</p></article>)}
       </section>
+      <section className="home-workflow">
+        <div>
+          <span>AI Workflow Studio</span>
+          <h2>从算力到内容生成，一站式跑通文生图和文生视频</h2>
+          <p>把常用图像、视频和商品素材链路封装成工作流模板。用户不用搭节点，只需要上传素材、填写提示词、选择参数，即可按次生成结果。</p>
+          <nav><a href="/compute/workflows">查看工作流</a><a href="/compute/workflows/ltx-video/run">立即创作</a></nav>
+        </div>
+        <aside>
+          {['文生视频', '图生视频', '商品营销'].map((item) => <article key={item}><strong>{item}</strong><p>模板化生成 · 按次计费</p></article>)}
+        </aside>
+      </section>
       <section className="home-prices">
         <h2>炼丹会员及租用价格</h2>
         <p>灵渠坚持为您提供服务稳定、价格公道的GPU租用服务。更为学生提供免费升级会员通道，享极具性价比的会员价格。<a>如何升级会员？</a></p>
