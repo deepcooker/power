@@ -69,6 +69,7 @@ function App() {
   const isArtSectionPage = currentPath.startsWith('/compute/app/') || currentPath.startsWith('/compute/art/');
   const isRentPage = currentPath === '/compute/rent';
   const isDashboardPage = currentPath === '/compute/dashboard';
+  const isInstanceWorkspacePage = currentPath === '/compute/instances/workspace';
   const isInstanceDetailPage = currentPath === '/compute/instances/detail';
   const isInstancesPage = currentPath === '/compute/instances';
   const isInstancesProPage = currentPath === '/compute/instances-pro';
@@ -141,6 +142,10 @@ function App() {
 
   if (isDashboardPage) {
     return <Shell data={data}><DashboardPage data={data} /></Shell>;
+  }
+
+  if (isInstanceWorkspacePage) {
+    return <Shell data={data}><ComputeInstanceWorkspacePage data={data} /></Shell>;
   }
 
   if (isInstanceDetailPage) {
@@ -2960,6 +2965,83 @@ function DeployMoreMenu() {
   );
 }
 
+function ComputeInstanceWorkspacePage({ data }: { data?: ComputePayload }) {
+  const instance = data?.instances?.[0];
+  const files = [
+    ['folder', 'autodl-tmp', '目录', '2026-05-20 15:41'],
+    ['folder', 'ComfyUI', '目录', '2026-05-20 15:42'],
+    ['folder', 'datasets', '目录', '2026-05-20 15:48'],
+    ['file', 'start.sh', '1.8 KB', '2026-05-20 15:40'],
+    ['file', 'requirements.txt', '3.4 KB', '2026-05-20 15:40'],
+    ['file', 'run.log', '28.6 KB', '2026-05-20 16:04'],
+  ];
+  const ports = [
+    ['JupyterLab', '8888', 'https://yaochuang.tech/compute/proxy/941327/8888', '运行中'],
+    ['SSH', '22', 'ssh root@connect.lingqu.local -p 29413', '运行中'],
+    ['WebUI', '6006', 'https://yaochuang.tech/compute/proxy/941327/6006', '运行中'],
+    ['AutoPanel', '6008', 'https://yaochuang.tech/compute/proxy/941327/6008', '运行中'],
+  ];
+  const tasks = [
+    ['PID 1217', 'python app.py --listen 0.0.0.0 --port 6006', '00:38:12', '2.1GB'],
+    ['PID 1241', 'jupyter-lab --allow-root --port 8888', '00:38:02', '742MB'],
+    ['PID 1356', 'tensorboard --logdir /root/autodl-tmp/logs', '00:12:44', '318MB'],
+  ];
+  return (
+    <div className="console-layout">
+      <ConsoleSideBar current="instances" />
+      <main className="compute-workspace-main">
+        <div className="compute-detail-head">
+          <div>
+            <div className="rent-crumb">容器实例 / 实例工作台</div>
+            <h1>{instance?.name ?? 'RTX5090-训练实例'} 工作台</h1>
+            <p>{instance?.region ?? '西北B区'} / {instance?.machine ?? 'C90机'} · {instance?.id ?? 'instance-941327a885'} · 运行中</p>
+          </div>
+          <div><button>重连</button><button>同步文件</button><button onClick={() => { window.location.href = '/compute/instances/detail'; }}>返回详情</button></div>
+        </div>
+        <section className="workspace-status compute-workspace-status">
+          <article><span>实例状态</span><strong>运行中</strong><p>GPU计费中 · 健康状态正常</p></article>
+          <article><span>当前镜像</span><strong>PyTorch 2.8.0</strong><p>Python 3.11 · CUDA 13.0</p></article>
+          <article><span>数据目录</span><strong>/root/autodl-tmp</strong><p>已用 38.4GB / 50GB</p></article>
+          <article><span>公网服务</span><strong>4 个端口</strong><p>8888 / 22 / 6006 / 6008</p></article>
+        </section>
+        <div className="compute-workspace-grid">
+          <section className="workspace-terminal compute-workspace-terminal">
+            <div className="workspace-title"><h2>SSH 终端</h2><span>root@instance-941327a885</span></div>
+            <pre>{['root@autodl-container:~# nvidia-smi','RTX 5090  23%   18234MiB / 32768MiB','root@autodl-container:~# pwd','/root','root@autodl-container:~# cd /root/autodl-tmp','root@autodl-container:~/autodl-tmp# bash start.sh --port 6006','service already running on 0.0.0.0:6006'].join('\n')}</pre>
+            <div><input value="tail -f /root/autodl-tmp/run.log" readOnly /><button>发送</button></div>
+          </section>
+          <section className="workspace-files compute-workspace-files">
+            <div className="workspace-title"><h2>文件浏览器</h2><span>/root</span></div>
+            <div className="file-toolbar"><button>上传</button><button>新建目录</button><button>下载</button><button>刷新</button></div>
+            <div className="file-table">
+              <div className="head"><span>名称</span><span>大小/类型</span><span>修改时间</span></div>
+              {files.map((row) => <div className="row" key={row[1]}><span><i className={row[0]} />{row[1]}</span><span>{row[2]}</span><span>{row[3]}</span></div>)}
+            </div>
+          </section>
+          <section className="compute-port-card">
+            <div className="workspace-title"><h2>端口服务</h2><span>平台代理地址</span></div>
+            <div className="compute-port-table">
+              <div className="head"><span>服务</span><span>端口</span><span>地址</span><span>状态</span></div>
+              {ports.map((row) => <div className="row" key={row[0]}>{row.map((cell, index) => <span className={index === 2 ? 'url' : index === 3 ? 'ok' : ''} key={cell}>{cell}</span>)}</div>)}
+            </div>
+          </section>
+          <section className="compute-task-card">
+            <div className="workspace-title"><h2>运行进程</h2><span>top 采样</span></div>
+            <div className="compute-task-list">
+              {tasks.map((row) => <article key={row[0]}><strong>{row[0]}</strong><span>{row[1]}</span><em>{row[2]}</em><b>{row[3]}</b></article>)}
+            </div>
+          </section>
+          <section className="workspace-logs compute-workspace-logs">
+            <div className="workspace-title"><h2>实时日志</h2><span>run.log</span></div>
+            <pre>{['[16:03:22] proxy /compute/proxy/941327/6006 ready','[16:03:25] model cache loaded from /root/autodl-tmp/models','[16:03:31] web server listening on 0.0.0.0:6006','[16:04:02] request GET /health 200','[16:04:18] gpu memory allocated 18.2GB'].join('\n')}</pre>
+            <div className="log-actions"><button>清空</button><button>下载日志</button><button>自动滚动</button></div>
+          </section>
+        </div>
+      </main>
+    </div>
+  );
+}
+
 function ComputeInstanceDetailPage({ data }: { data?: ComputePayload }) {
   const [modal, setModal] = useState<'boot' | 'stop' | 'restart' | 'release' | 'rename' | ''>('');
   const instance = data?.instances?.[0];
@@ -3015,7 +3097,7 @@ function ComputeInstanceDetailPage({ data }: { data?: ComputePayload }) {
             <span className="compute-state">运行中</span>
             <h2>PyTorch 2.8.0 / Python 3.11 / CUDA 13.0</h2>
             <p>当前实例通过平台代理提供 JupyterLab、SSH、自定义服务和 6008 管理入口，适合训练、调试和 WebUI 服务。</p>
-            <div><button>JupyterLab</button><button>终端登录</button><button>AutoPanel-6008</button><button>自定义服务-6006</button></div>
+            <div><button onClick={() => { window.location.href = '/compute/instances/workspace'; }}>JupyterLab</button><button onClick={() => { window.location.href = '/compute/instances/workspace'; }}>终端登录</button><button onClick={() => { window.location.href = '/compute/instances/workspace'; }}>AutoPanel-6008</button><button onClick={() => { window.location.href = '/compute/instances/workspace'; }}>自定义服务-6006</button></div>
           </div>
           <aside>
             <span>实时费用</span>
@@ -3138,7 +3220,7 @@ function InstancesPage({ data }: { data?: ComputePayload }) {
               <span>{item.billing}</span>
               <span>{item.release_time.replace('到期15天后释放 ', '到期15天后释放\n')}<a>{item.billing === '按量计费' ? '立即释放' : ''}</a></span>
               <span>终端登录<br />ssh******<small>*</small><a>复制</a><br />密码<br />********<small>*</small><a>复制</a></span>
-              <span className="tool-links">{item.quick_tools.map((tool) => <a key={tool}>{tool}</a>)}</span>
+              <span className="tool-links">{item.quick_tools.map((tool) => <a href="/compute/instances/workspace" key={tool}>{tool}</a>)}</span>
               <span className="tool-links"><a>关机</a><a>更多</a></span>
             </div>
           ))}

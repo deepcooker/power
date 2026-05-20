@@ -5729,6 +5729,107 @@ button { cursor: pointer; }
   background: #315cff;
   color: #fff;
 }
+.compute-workspace-main {
+  min-height: calc(100vh - 60px);
+  padding: 22px;
+  background: #f7f8fb;
+}
+.compute-workspace-status {
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  margin-top: 16px;
+}
+.compute-workspace-grid {
+  display: grid;
+  grid-template-columns: minmax(0, 1.15fr) minmax(0, 1fr);
+  grid-template-areas:
+    "terminal files"
+    "ports files"
+    "tasks logs";
+  gap: 16px;
+  margin-top: 16px;
+}
+.compute-workspace-terminal {
+  grid-area: terminal;
+}
+.compute-workspace-files {
+  grid-area: files;
+}
+.compute-workspace-logs {
+  grid-area: logs;
+}
+.compute-port-card,
+.compute-task-card {
+  padding: 18px;
+  border: 1px solid #e0e5ef;
+  border-radius: 6px;
+  background: #fff;
+}
+.compute-port-card {
+  grid-area: ports;
+}
+.compute-task-card {
+  grid-area: tasks;
+}
+.compute-port-table {
+  overflow: hidden;
+  border: 1px solid #e5e9f1;
+  border-radius: 4px;
+}
+.compute-port-table .head,
+.compute-port-table .row {
+  display: grid;
+  grid-template-columns: 0.9fr 0.55fr minmax(0, 1.9fr) 0.65fr;
+  align-items: center;
+  min-height: 42px;
+  padding: 0 12px;
+  column-gap: 12px;
+}
+.compute-port-table .head {
+  background: #f5f6f9;
+  color: #777;
+}
+.compute-port-table .row {
+  border-top: 1px solid #edf0f5;
+}
+.compute-port-table .url {
+  overflow: hidden;
+  color: #315cff;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.compute-port-table .ok {
+  color: #1f9d62;
+}
+.compute-task-list {
+  display: grid;
+  gap: 10px;
+}
+.compute-task-list article {
+  display: grid;
+  grid-template-columns: 88px minmax(0, 1fr) 72px 64px;
+  gap: 10px;
+  align-items: center;
+  min-height: 44px;
+  padding: 0 12px;
+  border: 1px solid #edf0f5;
+  border-radius: 4px;
+}
+.compute-task-list strong {
+  color: #202633;
+}
+.compute-task-list span {
+  overflow: hidden;
+  color: #5e6675;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.compute-task-list em {
+  color: #6a7280;
+  font-style: normal;
+}
+.compute-task-list b {
+  color: #315cff;
+}
 .art-instance-filter {
   justify-content: flex-start;
   margin-bottom: 16px;
