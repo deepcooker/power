@@ -10185,6 +10185,121 @@ button { cursor: pointer; }
 .workflow-node-preview {
   margin-top: 18px;
 }
+.workflow-detail-panels {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 340px;
+  gap: 16px;
+  margin-top: 18px;
+}
+.workflow-param-table,
+.workflow-cost-card,
+.workflow-review-wall article,
+.workflow-related {
+  border: 1px solid #e0e5ef;
+  border-radius: 8px;
+  background: #fff;
+}
+.workflow-param-table,
+.workflow-cost-card {
+  padding: 18px;
+}
+.workflow-param-table h2,
+.workflow-cost-card h2 {
+  margin: 0 0 14px;
+  font-size: 18px;
+}
+.workflow-param-table div {
+  min-height: 50px;
+  display: grid;
+  grid-template-columns: 90px 70px 1fr;
+  align-items: center;
+  gap: 14px;
+  border-top: 1px solid #edf0f5;
+}
+.workflow-param-table span {
+  color: #202633;
+  font-weight: 600;
+}
+.workflow-param-table b {
+  width: fit-content;
+  padding: 3px 8px;
+  border-radius: 12px;
+  background: #edf3ff;
+  color: #315cff;
+  font-size: 12px;
+}
+.workflow-param-table p {
+  margin: 0;
+  color: #637083;
+}
+.workflow-cost-card {
+  background: linear-gradient(180deg, #fff, #f8fbff);
+}
+.workflow-cost-card div {
+  display: flex;
+  justify-content: space-between;
+  gap: 14px;
+  padding: 12px 0;
+  border-top: 1px solid #edf0f5;
+}
+.workflow-cost-card span {
+  color: #637083;
+}
+.workflow-cost-card strong {
+  color: #ff7a1a;
+}
+.workflow-cost-card p {
+  margin: 12px 0 16px;
+  color: #637083;
+  line-height: 1.7;
+}
+.workflow-cost-card a {
+  height: 38px;
+  display: inline-flex;
+  align-items: center;
+  padding: 0 18px;
+  border-radius: 4px;
+  background: #315cff;
+  color: #fff;
+}
+.workflow-review-wall {
+  margin-top: 22px;
+}
+.workflow-review-wall > div:last-child {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 16px;
+}
+.workflow-review-wall article {
+  padding: 18px;
+}
+.workflow-review-wall article strong {
+  display: inline-flex;
+  height: 28px;
+  align-items: center;
+  padding: 0 10px;
+  border-radius: 14px;
+  background: #fff7ed;
+  color: #f97316;
+}
+.workflow-review-wall h3 {
+  margin: 14px 0 8px;
+  font-size: 17px;
+}
+.workflow-review-wall p {
+  margin: 0;
+  color: #637083;
+  line-height: 1.7;
+}
+.workflow-related {
+  margin-top: 22px;
+  padding: 18px;
+}
+.workflow-related > div:last-child {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 16px;
+}
 .workflow-detail-bottom {
   display: grid;
   grid-template-columns: repeat(2, minmax(0, 1fr));
@@ -10219,6 +10334,9 @@ button { cursor: pointer; }
   .workflow-grid,
   .workflow-scenarios,
   .workflow-detail-grid,
+  .workflow-detail-panels,
+  .workflow-review-wall > div:last-child,
+  .workflow-related > div:last-child,
   .workflow-template-shelf > div:last-child {
     grid-template-columns: repeat(2, minmax(0, 1fr));
   }
@@ -10238,6 +10356,9 @@ button { cursor: pointer; }
   .workflow-strip,
   .workflow-scenarios,
   .workflow-detail-grid,
+  .workflow-detail-panels,
+  .workflow-review-wall > div:last-child,
+  .workflow-related > div:last-child,
   .workflow-detail-bottom,
   .workflow-template-shelf > div:last-child,
   .workflow-showcase > div:last-child {
@@ -10261,6 +10382,11 @@ button { cursor: pointer; }
   }
   .workflow-featured-grid article {
     min-height: 220px;
+  }
+  .workflow-param-table div {
+    grid-template-columns: 1fr;
+    gap: 6px;
+    padding: 12px 0;
   }
 }
 .workflow-nodes {

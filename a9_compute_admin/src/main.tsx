@@ -555,6 +555,18 @@ function WorkflowDetailPage() {
     ['商品旋转', '玻璃质感产品，慢速环绕，金色高光', '00:05'],
     ['城市夜景', '赛博城市街头，霓虹反射，推轨镜头', '00:08'],
   ];
+  const params = [
+    ['参考图', '必填', 'JPG / PNG，建议 1024px 以上'],
+    ['提示词', '必填', '镜头、动作、风格、光线描述'],
+    ['比例', '可选', '9:16 / 16:9 / 1:1'],
+    ['时长', '可选', '4s / 6s / 8s'],
+    ['清晰度', '可选', '720P / 1080P'],
+  ];
+  const reviews = [
+    ['短视频团队', '出片稳定，角色一致性比直接跑开源节点好很多。', '4.9'],
+    ['电商运营', '商品图转视频能直接拿去做投放素材，失败会退回费用。', '4.8'],
+    ['独立创作者', '参数不复杂，适合不会搭节点的人快速试镜头。', '4.7'],
+  ];
   return (
     <main className="workflow-detail-page">
       <section className="workflow-detail-hero">
@@ -585,6 +597,28 @@ function WorkflowDetailPage() {
       <section className="workflow-node-preview">
         <h2>工作流预览</h2>
         <WorkflowNodes />
+      </section>
+      <section className="workflow-detail-panels">
+        <article className="workflow-param-table">
+          <h2>开放参数</h2>
+          {params.map((row) => <div key={row[0]}><span>{row[0]}</span><b>{row[1]}</b><p>{row[2]}</p></div>)}
+        </article>
+        <article className="workflow-cost-card">
+          <h2>费用估算</h2>
+          <div><span>基础生成</span><strong>12 算力币</strong></div>
+          <div><span>1080P 高清</span><strong>+4 算力币</strong></div>
+          <div><span>8 秒时长</span><strong>+6 算力币</strong></div>
+          <p>提交时预扣，失败自动退回。批量任务会按实际成功数量结算。</p>
+          <a href="/compute/workflows/ltx-video/run">开始生成</a>
+        </article>
+      </section>
+      <section className="workflow-review-wall">
+        <div className="workflow-section-head"><h2>用户反馈</h2><div><button className="active">全部</button><button>商用</button><button>创作</button></div></div>
+        <div>{reviews.map((row) => <article key={row[0]}><strong>{row[2]}</strong><h3>{row[0]}</h3><p>{row[1]}</p></article>)}</div>
+      </section>
+      <section className="workflow-related">
+        <div className="workflow-section-head"><h2>相似工作流</h2><div><a href="/compute/workflows">返回广场</a></div></div>
+        <div>{workflowCards.slice(1, 4).map((card) => <WorkflowCard card={card} key={card[0]} />)}</div>
       </section>
       <section className="workflow-detail-bottom">
         <article><h2>运行须知</h2><p>该工作流内部节点和模型参数已锁定，只开放稳定输入项。生成结果受素材质量、提示词和时长影响。</p></article>
