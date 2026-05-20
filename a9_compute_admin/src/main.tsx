@@ -39,6 +39,20 @@ const deploymentRows = [
   { id: 'edbb3ea075', name: 'vc-train', type: 'ReplicaSet', region: '重庆A区', gpu: 'RTX 2080 Ti x2', copies: ['0', '0', '77522', '0'], pack: '未购买', status: '部署中', created: '2024-10-21\n13:57:56' },
   { id: '6c06dea33c', name: '素材清洗-OCR', type: 'ReplicaSet', region: '西北企业区', gpu: 'RTX 3080x2', copies: ['0', '0', '1258', '0'], pack: 'RTX 3080x2：剩29分\n查看使用详情', status: '部署中', created: '2024-09-12\n10:02:12' },
 ];
+const workflowCards = [
+  ['LTX2.3 图生视频', '上传角色图，一键生成电影感运镜短片', '图生视频', '8.6k', '12算力币/次', 'video', '精选'],
+  ['Wan2.2 文生视频', '输入剧情提示词，生成高质感商业视频镜头', '文生视频', '6.9k', '18算力币/次', 'cinema', '热门'],
+  ['商品图动态展示', '电商主图转 5 秒卖点视频，适合批量投放', '商品营销', '5.1k', '9算力币/次', 'product', '商用'],
+  ['数字人口播片段', '上传人像和口播文案，生成竖版短视频', '数字人', '4.8k', '15算力币/次', 'avatar', '新'],
+  ['赛博风格转绘', '普通照片转赛博朋克风图像和视频封面', '风格化', '9.2k', '6算力币/次', 'cyber', '爆款'],
+  ['漫画分镜生成', '提示词生成连续分镜，支持二次编辑', '图像设计', '3.7k', '5算力币/次', 'comic', '精选'],
+];
+const workflowRuns = [
+  ['LTX2.3 图生视频', '生成成功', '00:01:48', '12算力币', '2026-05-20 17:18', 'video'],
+  ['商品图动态展示', '生成中', '00:00:36', '9算力币', '2026-05-20 17:11', 'product'],
+  ['Wan2.2 文生视频', '排队中', '-', '18算力币', '2026-05-20 17:02', 'cinema'],
+  ['赛博风格转绘', '生成失败', '00:00:52', '0算力币', '2026-05-20 16:44', 'cyber'],
+];
 const imageRows = [
   { uuid: 'image-e55db9ae41', name: 'new0415', size: '20.78GB', status: '就绪', share: '私有镜像', source: 'AutoDL', cache: '重庆区', base: 'Miniconda  conda3\nPython  3.10(ubuntu22.04)\nCUDA  11.8', created: '2026-04-15 13:30:50' },
   { uuid: 'image-ef24180470', name: 'policy2026', size: '14.97GB', status: '就绪', share: '私有镜像', source: 'AutoDL', cache: '重庆区', base: 'Miniconda  conda3\nPython  3.10(ubuntu22.04)\nCUDA  11.8', created: '2026-01-17 01:11:09' },
@@ -65,6 +79,10 @@ function App() {
   const [gpu, setGpu] = useState('');
   const currentPath = window.location.pathname.replace(/\/$/, '');
   const isHomePage = currentPath === '/compute/home';
+  const isWorkflowRunsPage = currentPath === '/compute/workflow-runs';
+  const isWorkflowRunPage = currentPath === '/compute/workflows/ltx-video/run';
+  const isWorkflowDetailPage = currentPath === '/compute/workflows/ltx-video';
+  const isWorkflowsPage = currentPath === '/compute/workflows';
   const isArtMarketPage = currentPath === '/compute/app/market' || currentPath === '/compute/art-market' || currentPath.startsWith('/compute/app/market/');
   const isArtSectionPage = currentPath.startsWith('/compute/app/') || currentPath.startsWith('/compute/art/');
   const isRentPage = currentPath === '/compute/rent';
@@ -130,6 +148,22 @@ function App() {
 
   if (isHomePage) {
     return <Shell data={data}><HomePage /></Shell>;
+  }
+
+  if (isWorkflowRunsPage) {
+    return <Shell data={data}><WorkflowRunsPage /></Shell>;
+  }
+
+  if (isWorkflowRunPage) {
+    return <Shell data={data}><WorkflowRunPage /></Shell>;
+  }
+
+  if (isWorkflowDetailPage) {
+    return <Shell data={data}><WorkflowDetailPage /></Shell>;
+  }
+
+  if (isWorkflowsPage) {
+    return <Shell data={data}><WorkflowsPage /></Shell>;
   }
 
   if (isArtMarketPage) {
@@ -297,15 +331,16 @@ function Shell({ children, data }: { children: ReactNode; data?: ComputePayload 
   const isServers = pathname.includes('/servers');
   const isPrivateCloud = pathname.includes('/private-cloud');
   const isDocs = pathname.includes('/docs');
+  const isWorkflows = pathname.includes('/workflows') || pathname.includes('/workflow-runs');
   const isArtApp = pathname.includes('/app/') || pathname.includes('/art/');
-  const isMarket = !isHome && !isArtApp && !isConsole && !pathname.includes('/deployments') && !isServers && !isPrivateCloud && !isDocs;
+  const isMarket = !isHome && !isArtApp && !isWorkflows && !isConsole && !pathname.includes('/deployments') && !isServers && !isPrivateCloud && !isDocs;
   return (
     <div className="page">
       <header className="promo">DeepSeek V4 API已上线&nbsp;&nbsp;<b>大模型广场</b></header>
       <nav className="topbar">
         <a className="brand" href="/compute/home"><span />灵渠</a>
         <div className="topnav">
-          <a className={isMarket ? 'active' : ''} href="/compute">算力市场</a><a className={isArtApp ? 'active' : ''} href="/compute/app/market">AI应用</a><a className={isServers ? 'active' : ''} href="/compute/servers">AI服务器</a><a className={isPrivateCloud ? 'active' : ''} href="/compute/private-cloud">私有云</a><a className={isDocs ? 'active' : ''} href="/compute/docs">帮助文档</a><button className="top-more" type="button" onClick={() => setMoreOpen(!moreOpen)}>更多⌃</button>
+          <a className={isMarket ? 'active' : ''} href="/compute">算力市场</a><a className={isArtApp ? 'active' : ''} href="/compute/app/market">AI应用</a><a className={isWorkflows ? 'active' : ''} href="/compute/workflows">工作流</a><a className={isServers ? 'active' : ''} href="/compute/servers">AI服务器</a><a className={isPrivateCloud ? 'active' : ''} href="/compute/private-cloud">私有云</a><a className={isDocs ? 'active' : ''} href="/compute/docs">帮助文档</a><button className="top-more" type="button" onClick={() => setMoreOpen(!moreOpen)}>更多⌃</button>
           {moreOpen && <div className="top-more-menu"><a href="/compute/api-deploy">API弹性部署</a><a href="/compute/shared-data">共享数据</a></div>}
         </div>
         <div className="topuser">
@@ -411,6 +446,151 @@ function HomePage() {
         <div><h3>灵渠</h3><a>加入我们</a><a>联系电话：15335190557</a></div>
         <div><h3>扫码关注公众号</h3><div className="footer-qr" /></div>
       </footer>
+    </main>
+  );
+}
+
+function WorkflowsPage() {
+  const cats = ['推荐', '文生视频', '图生视频', '商品营销', '数字人', '风格化', 'ComfyUI'];
+  return (
+    <main className="workflow-page">
+      <section className="workflow-hero">
+        <div>
+          <span>LingQu Workflow</span>
+          <h1>AI工作流创作平台</h1>
+          <p>把成熟的文生视频、图生视频和商业创作链路封装成黑盒工作流。上传素材，填写提示词，直接生成结果。</p>
+          <div><a href="/compute/workflows/ltx-video/run">立即生成</a><a href="/compute/workflow-runs">查看记录</a></div>
+        </div>
+        <div className="workflow-hero-stage">
+          <article className="big"><b>LTX2.3</b><strong>角色图转电影短片</strong><em>12算力币/次</em></article>
+          <article><b>Wan2.2</b><strong>文生视频</strong></article>
+          <article><b>ComfyUI</b><strong>成熟节点黑盒执行</strong></article>
+        </div>
+      </section>
+      <section className="workflow-strip">
+        {['今日运行 12,486 次', '平均出片 94 秒', '热门工作流 68 个', '支持 AutoDL 弹性算力'].map((item) => <span key={item}>{item}</span>)}
+      </section>
+      <section className="workflow-section-head"><h2>热门工作流</h2><div>{cats.map((cat, index) => <button className={index === 0 ? 'active' : ''} key={cat}>{cat}</button>)}</div></section>
+      <div className="workflow-layout">
+        <section className="workflow-grid">
+          {workflowCards.map((card) => <WorkflowCard card={card} key={card[0]} />)}
+        </section>
+        <aside className="workflow-rank">
+          <h2>创作榜</h2>
+          {workflowCards.slice(0, 5).map((card, index) => <a href="/compute/workflows/ltx-video" key={card[0]}><b>{index + 1}</b><span>{card[0]}</span><em>{card[3]}</em></a>)}
+        </aside>
+      </div>
+      <section className="workflow-scenarios">
+        {[
+          ['短视频投放', '商品图、剧情脚本、口播模板批量生成'],
+          ['角色 IP', '保持人物一致性，生成多镜头素材'],
+          ['电商内容', '主图转视频，快速生成种草素材'],
+          ['创作者工具', '成熟 ComfyUI 工作流黑盒运行'],
+        ].map((item) => <article key={item[0]}><strong>{item[0]}</strong><p>{item[1]}</p></article>)}
+      </section>
+    </main>
+  );
+}
+
+function WorkflowCard({ card }: { card: string[] }) {
+  return (
+    <article className="workflow-card" onClick={() => { window.location.href = '/compute/workflows/ltx-video'; }}>
+      <div className={`workflow-cover ${card[5]}`}><span>{card[6]}</span><strong>{card[0]}</strong></div>
+      <div className="workflow-card-body">
+        <h2>{card[0]}</h2>
+        <p>{card[1]}</p>
+        <div><span>{card[2]}</span><span>运行 {card[3]}</span></div>
+        <footer><b>{card[4]}</b><button>立即使用</button></footer>
+      </div>
+    </article>
+  );
+}
+
+function WorkflowDetailPage() {
+  return (
+    <main className="workflow-detail-page">
+      <section className="workflow-detail-hero">
+        <div className="workflow-detail-media">
+          <div className="preview-main">LTX2.3<br />Video Preview</div>
+          <div><span /> <span /> <span /></div>
+        </div>
+        <aside>
+          <span className="workflow-badge">精选工作流</span>
+          <h1>LTX2.3 图生视频</h1>
+          <p>上传人物或商品图，输入镜头描述，自动生成电影感短视频。底层流程黑盒执行，只开放稳定参数。</p>
+          <div className="workflow-author"><b>灵渠官方</b><span>运行 8,624 · 收藏 1,209 · 评分 4.9</span></div>
+          <div className="workflow-price"><strong>12算力币/次</strong><em>预计 60-120 秒</em></div>
+          <div className="workflow-actions"><a href="/compute/workflows/ltx-video/run">立即使用</a><button>收藏</button><button>复制链接</button></div>
+        </aside>
+      </section>
+      <section className="workflow-detail-grid">
+        <article><h2>适用场景</h2><p>角色动态、商品展示、剧情分镜、社媒短视频、AI 影视预览。</p></article>
+        <article><h2>输入参数</h2><p>参考图、提示词、比例、时长、清晰度、seed。节点链路和模型参数默认锁定。</p></article>
+        <article><h2>算力配置</h2><p>优先使用 RTX 4090 / 5090，底层可通过 AutoDL 弹性资源执行。</p></article>
+      </section>
+      <section className="workflow-node-preview">
+        <h2>工作流预览</h2>
+        <WorkflowNodes />
+      </section>
+    </main>
+  );
+}
+
+function WorkflowRunPage() {
+  return (
+    <main className="workflow-run-page">
+      <header className="workflow-studio-top">
+        <div><b>LTX2.3 图生视频</b><span>自动保存 · 版本 v1.8 · 黑盒加速节点</span></div>
+        <nav><button>另存为模板</button><button>导出(API)</button><button>发布</button><a href="/compute/workflow-runs">运行记录</a></nav>
+      </header>
+      <div className="workflow-studio">
+        <aside className="workflow-input-panel">
+          <h2>输入参数</h2>
+          <label><span>参考图</span><div className="upload-box">拖拽上传图片</div></label>
+          <label><span>提示词</span><textarea value="电影感镜头，人物回头，柔和光线，浅景深，细节丰富" readOnly /></label>
+          <label><span>比例</span><div><button className="active">9:16</button><button>16:9</button><button>1:1</button></div></label>
+          <label><span>时长</span><div><button>4s</button><button className="active">6s</button><button>8s</button></div></label>
+          <label><span>清晰度</span><div><button>720P</button><button className="active">1080P</button></div></label>
+          <label><span>Seed</span><input value="238471" readOnly /></label>
+        </aside>
+        <section className="workflow-canvas-panel">
+          <div className="workflow-result-stage"><span>等待生成</span><strong>LTX2.3 Preview</strong><p>运行后将在这里显示视频结果和中间帧。</p></div>
+          <WorkflowNodes />
+          <div className="workflow-log"><b>运行日志</b><p>[17:22:14] 等待提交任务</p><p>[17:22:16] AutoDL 弹性资源预检查完成</p></div>
+        </section>
+        <aside className="workflow-run-config">
+          <h2>运行配置</h2>
+          <p><span>推荐 GPU</span><strong>RTX 4090 / 5090</strong></p>
+          <p><span>地区</span><strong>北京B区 / 重庆A区</strong></p>
+          <p><span>预计耗时</span><strong>60-120 秒</strong></p>
+          <p><span>本次费用</span><strong>12 算力币</strong></p>
+          <p><span>账户余额</span><strong>1303.96</strong></p>
+          <button onClick={() => { window.location.href = '/compute/workflow-runs'; }}>立即运行</button>
+          <small>提交后会创建运行记录，任务完成后自动保存结果。</small>
+        </aside>
+      </div>
+    </main>
+  );
+}
+
+function WorkflowNodes() {
+  const nodes = ['输入图', '提示词', '黑盒加速节点', '视频采样', '结果输出'];
+  return <div className="workflow-nodes">{nodes.map((node, index) => <div className={index === 2 ? 'core' : ''} key={node}><b>{index + 1}</b><span>{node}</span>{index < nodes.length - 1 && <i />}</div>)}</div>;
+}
+
+function WorkflowRunsPage() {
+  return (
+    <main className="workflow-runs-page">
+      <div className="workflow-section-head"><h1>创作记录</h1><div><button className="active">全部</button><button>运行中</button><button>成功</button><button>失败</button></div></div>
+      <section className="workflow-runs-grid">
+        {workflowRuns.map((run) => (
+          <article className="workflow-run-card" key={run[0] + run[4]}>
+            <div className={`workflow-cover ${run[5]}`}><span>{run[1]}</span><strong>{run[0]}</strong></div>
+            <div><h2>{run[0]}</h2><p>{run[4]}</p><span>耗时 {run[2]}</span><span>{run[3]}</span></div>
+            <footer><button>查看结果</button><button onClick={() => { window.location.href = '/compute/workflows/ltx-video/run'; }}>再次运行</button></footer>
+          </article>
+        ))}
+      </section>
     </main>
   );
 }
