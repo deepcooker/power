@@ -17,7 +17,6 @@ from fastapi.staticfiles import StaticFiles
 ROOT = Path(__file__).resolve().parent
 FRONTEND_DIST = ROOT / "a9_compute_admin" / "dist"
 WORKFLOW_RUNS_FILE = Path(os.getenv("WORKFLOW_RUNS_FILE", str(ROOT / "runtime_data" / "workflow_runs.json")))
-MOBILE_CONSOLE_ROOT = Path(os.getenv("MOBILE_CONSOLE_ROOT", str(ROOT))).resolve()
 MOBILE_SSH_TARGET = os.getenv("MOBILE_SSH_TARGET", "")
 
 app = FastAPI(title="A9 Compute Admin API", version="0.1.0")
@@ -209,8 +208,8 @@ class WorkflowRunRequest(BaseModel):
 
 class MobileCommandRequest(BaseModel):
     command: str
-    cwd: Optional[str] = "."
-    target: Optional[str] = "local"
+    cwd: Optional[str] = "~"
+    target: Optional[str] = None
 
 
 def estimate_workflow_cost(payload: WorkflowRunRequest):
@@ -234,22 +233,29 @@ def workflow_template_title(template_id: str, mode: str):
     return "文生图生成" if mode == "text_to_image" else "文生视频生成" if mode == "text_to_video" else "图生视频生成"
 
 
-def resolve_mobile_path(path: Optional[str]):
-    raw_path = path or "."
-    candidate = Path(raw_path)
-    if not candidate.is_absolute():
-        candidate = MOBILE_CONSOLE_ROOT / candidate
-    resolved = candidate.resolve()
-    try:
-        resolved.relative_to(MOBILE_CONSOLE_ROOT)
-    except ValueError:
-        raise HTTPException(status_code=400, detail="path is outside mobile console root")
-    return resolved
+def parse_ssh_target(target: Optional[str]):
+    raw = (target or MOBILE_SSH_TARGET).strip()
+    if not raw:
+        raise HTTPException(status_code=400, detail="ssh target is required")
+    parts = shlex.split(raw)
+    if parts and parts[0] == "ssh":
+        parts = parts[1:]
+    if not parts:
+        raise HTTPException(status_code=400, detail="ssh target is required")
+    return parts
 
 
-def mobile_relative_path(path: Path):
-    rel = path.resolve().relative_to(MOBILE_CONSOLE_ROOT)
-    return "." if str(rel) == "." else str(rel)
+def run_ssh(target: Optional[str], remote_command: str, timeout: int = 25):
+    args = ["ssh", "-o", "BatchMode=yes", "-o", "ConnectTimeout=8", *parse_ssh_target(target), remote_command]
+    return subprocess.run(args, capture_output=True, text=True, timeout=timeout)
+
+
+def remote_cd_command(cwd: str):
+    if cwd == "~":
+        return "cd ~"
+    if cwd.startswith("~/"):
+        return f"cd ~/{shlex.quote(cwd[2:])}"
+    return f"cd {shlex.quote(cwd)}"
 
 
 @app.get("/api/health")
@@ -516,33 +522,15 @@ async def mobile_terminal_run(payload: MobileCommandRequest):
     command = payload.command.strip()
     if not command:
         raise HTTPException(status_code=400, detail="command is required")
-    cwd = resolve_mobile_path(payload.cwd)
-    if not cwd.exists() or not cwd.is_dir():
-        raise HTTPException(status_code=400, detail="cwd is not a directory")
-    if payload.target == "ssh":
-        if not MOBILE_SSH_TARGET:
-            raise HTTPException(status_code=400, detail="MOBILE_SSH_TARGET is not configured")
-        ssh_command = f"cd {shlex.quote(str(cwd))} && {command}"
-        args = ["ssh", "-o", "BatchMode=yes", "-o", "ConnectTimeout=8", MOBILE_SSH_TARGET, ssh_command]
-        shell = False
-    else:
-        args = command
-        shell = True
+    cwd = payload.cwd or "~"
+    ssh_command = f"{remote_cd_command(cwd)} && {command}"
     try:
-        completed = subprocess.run(
-            args,
-            cwd=str(cwd),
-            shell=shell,
-            capture_output=True,
-            text=True,
-            timeout=25,
-            executable="/bin/bash" if shell else None,
-        )
+        completed = run_ssh(payload.target, ssh_command)
         return ok(
             {
                 "command": command,
-                "cwd": mobile_relative_path(cwd),
-                "target": "ssh" if payload.target == "ssh" else "local",
+                "cwd": cwd,
+                "target": payload.target,
                 "exit_code": completed.returncode,
                 "stdout": completed.stdout[-20000:],
                 "stderr": completed.stderr[-12000:],
@@ -553,8 +541,8 @@ async def mobile_terminal_run(payload: MobileCommandRequest):
         return ok(
             {
                 "command": command,
-                "cwd": mobile_relative_path(cwd),
-                "target": "ssh" if payload.target == "ssh" else "local",
+                "cwd": cwd,
+                "target": payload.target,
                 "exit_code": 124,
                 "stdout": (exc.stdout or "")[-20000:],
                 "stderr": ((exc.stderr or "") + "\ncommand timed out after 25s")[-12000:],
@@ -564,43 +552,56 @@ async def mobile_terminal_run(payload: MobileCommandRequest):
 
 
 @app.get("/api/mobile/files")
-async def mobile_files(path: str = Query(default=".")):
-    current = resolve_mobile_path(path)
-    if not current.exists():
-        raise HTTPException(status_code=404, detail="path not found")
-    if current.is_file():
-        current = current.parent
-    rows = []
-    for child in current.iterdir():
-        try:
-            stat = child.stat()
-        except OSError:
-            continue
-        rows.append(
-            {
-                "name": child.name,
-                "path": mobile_relative_path(child),
-                "type": "dir" if child.is_dir() else "file",
-                "size": stat.st_size,
-                "modified": datetime.fromtimestamp(stat.st_mtime, timezone.utc).strftime("%Y-%m-%d %H:%M"),
-            }
-        )
-    rows.sort(key=lambda item: (item["type"] != "dir", item["name"].lower()))
-    parent = None
-    if current != MOBILE_CONSOLE_ROOT:
-        parent = mobile_relative_path(current.parent)
-    return ok({"path": mobile_relative_path(current), "root": str(MOBILE_CONSOLE_ROOT), "parent": parent, "items": rows[:300]})
+async def mobile_files(path: str = Query(default="~"), target: str = Query(default="")):
+    script = r"""
+import json, os, sys
+path = os.path.expanduser(sys.argv[1] or "~")
+if os.path.isfile(path):
+    path = os.path.dirname(path)
+path = os.path.abspath(path)
+items = []
+for name in os.listdir(path):
+    child = os.path.join(path, name)
+    try:
+        stat = os.stat(child)
+    except OSError:
+        continue
+    items.append({
+        "name": name,
+        "path": child,
+        "type": "dir" if os.path.isdir(child) else "file",
+        "size": stat.st_size,
+        "modified": __import__("datetime").datetime.fromtimestamp(stat.st_mtime).strftime("%Y-%m-%d %H:%M"),
+    })
+items.sort(key=lambda item: (item["type"] != "dir", item["name"].lower()))
+parent = os.path.dirname(path) if os.path.dirname(path) != path else None
+print(json.dumps({"path": path, "root": "/", "parent": parent, "items": items[:300]}, ensure_ascii=False))
+"""
+    remote_command = f"python3 -c {shlex.quote(script)} {shlex.quote(path)}"
+    completed = run_ssh(target, remote_command)
+    if completed.returncode != 0:
+        raise HTTPException(status_code=400, detail=completed.stderr[-1000:] or "failed to list remote files")
+    return ok(json.loads(completed.stdout))
 
 
 @app.get("/api/mobile/files/read")
-async def mobile_file_read(path: str = Query(...)):
-    current = resolve_mobile_path(path)
-    if not current.exists() or not current.is_file():
-        raise HTTPException(status_code=404, detail="file not found")
-    if current.stat().st_size > 1024 * 1024:
-        raise HTTPException(status_code=400, detail="file is larger than 1MB")
-    content = current.read_text(encoding="utf-8", errors="replace")
-    return ok({"path": mobile_relative_path(current), "content": content[:200000]})
+async def mobile_file_read(path: str = Query(...), target: str = Query(default="")):
+    script = r"""
+import json, os, sys
+path = os.path.abspath(os.path.expanduser(sys.argv[1]))
+if not os.path.isfile(path):
+    raise SystemExit("file not found")
+if os.path.getsize(path) > 1024 * 1024:
+    raise SystemExit("file is larger than 1MB")
+with open(path, "r", encoding="utf-8", errors="replace") as file:
+    content = file.read(200000)
+print(json.dumps({"path": path, "content": content}, ensure_ascii=False))
+"""
+    remote_command = f"python3 -c {shlex.quote(script)} {shlex.quote(path)}"
+    completed = run_ssh(target, remote_command)
+    if completed.returncode != 0:
+        raise HTTPException(status_code=400, detail=completed.stderr[-1000:] or "failed to read remote file")
+    return ok(json.loads(completed.stdout))
 
 
 if FRONTEND_DIST.exists():
