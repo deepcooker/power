@@ -1,0 +1,283 @@
+import os
+from datetime import datetime, timezone
+from pathlib import Path
+
+import uvicorn
+from fastapi import FastAPI
+from fastapi.middleware.cors import CORSMiddleware
+from fastapi.responses import FileResponse, RedirectResponse
+from fastapi.staticfiles import StaticFiles
+
+
+ROOT = Path(__file__).resolve().parent
+FRONTEND_DIST = ROOT / "a9_compute_admin" / "dist"
+
+app = FastAPI(title="A9 Compute Admin API", version="0.1.0")
+
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["*"],
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
+
+
+def ok(data):
+    return {"err_code": 0, "data": data}
+
+
+@app.get("/api/health")
+async def health():
+    return ok({"service": "a9-compute-admin", "status": "ok"})
+
+
+@app.get("/api/compute/autodl/console")
+async def autodl_console():
+    return ok(
+        {
+            "generated_at_utc": datetime.now(timezone.utc).isoformat(),
+            "provider": "AutoDL",
+            "account_name": "deepcooker",
+            "balance_cny": 1303.96,
+            "routes": ["autodl_elastic_api", "a9_billing", "a9_image_templates"],
+            "resources": [
+                {
+                    "id": "80d0408bc2",
+                    "region": "重庆A区",
+                    "machine": "027机",
+                    "gpu_model": "RTX 4090D",
+                    "gpu_memory_gb": 24,
+                    "available": 1,
+                    "total": 8,
+                    "cpu": "18 核 Xeon Platinum",
+                    "memory_gb": 80,
+                    "system_disk_gb": 30,
+                    "data_disk_gb": 50,
+                    "data_disk_expand_gb": 4096,
+                    "driver": "570.86.15",
+                    "cuda": "≤ 12.8",
+                    "hourly_price": 1.98,
+                    "original_hourly_price": 2.08,
+                    "discount_label": "9.5折",
+                    "provider": "AutoDL",
+                    "provider_mode": "autodl_elastic",
+                    "tags": ["合作商弹性接口", "一键镜像"],
+                },
+                {
+                    "id": "d0f64f9549",
+                    "region": "西北B区",
+                    "machine": "213机",
+                    "gpu_model": "RTX 5090",
+                    "gpu_memory_gb": 32,
+                    "available": 1,
+                    "total": 8,
+                    "cpu": "25 核 Xeon Platinum 8470Q",
+                    "memory_gb": 90,
+                    "system_disk_gb": 30,
+                    "data_disk_gb": 50,
+                    "data_disk_expand_gb": 1341,
+                    "driver": "595.58.03",
+                    "cuda": "≤ 13.2",
+                    "hourly_price": 2.78,
+                    "original_hourly_price": 2.93,
+                    "discount_label": "9.5折",
+                    "provider": "AutoDL",
+                    "provider_mode": "autodl_elastic",
+                    "tags": ["缓存优化"],
+                },
+                {
+                    "id": "27e64f848e",
+                    "region": "西北B区",
+                    "machine": "965机",
+                    "gpu_model": "vGPU-32GB",
+                    "gpu_memory_gb": 32,
+                    "available": 1,
+                    "total": 8,
+                    "cpu": "16 核 Xeon Platinum 8375C",
+                    "memory_gb": 62,
+                    "system_disk_gb": 30,
+                    "data_disk_gb": 50,
+                    "data_disk_expand_gb": 6735,
+                    "driver": "595.71.05",
+                    "cuda": "≤ 13.2",
+                    "hourly_price": 1.68,
+                    "original_hourly_price": 1.77,
+                    "discount_label": "9.5折",
+                    "provider": "AutoDL",
+                    "provider_mode": "autodl_elastic",
+                    "tags": ["缓存优化"],
+                },
+                {
+                    "id": "6dd1448dae",
+                    "region": "西北B区",
+                    "machine": "931机",
+                    "gpu_model": "RTX PRO 6000",
+                    "gpu_memory_gb": 96,
+                    "available": 1,
+                    "total": 9,
+                    "cpu": "22 核 Xeon Platinum 8470Q",
+                    "memory_gb": 110,
+                    "system_disk_gb": 30,
+                    "data_disk_gb": 50,
+                    "data_disk_expand_gb": 10,
+                    "driver": "580.82.09",
+                    "cuda": "≤ 13.0",
+                    "hourly_price": 5.98,
+                    "original_hourly_price": 7.97,
+                    "discount_label": "7.5折",
+                    "provider": "AutoDL",
+                    "provider_mode": "autodl_elastic",
+                    "tags": [],
+                },
+                {
+                    "id": "a19d43b48e",
+                    "region": "西北B区",
+                    "machine": "C90机",
+                    "gpu_model": "RTX PRO 6000",
+                    "gpu_memory_gb": 96,
+                    "available": 1,
+                    "total": 9,
+                    "cpu": "22 核 Xeon Platinum 8470Q",
+                    "memory_gb": 110,
+                    "system_disk_gb": 30,
+                    "data_disk_gb": 50,
+                    "data_disk_expand_gb": 6350,
+                    "driver": "580.95.05",
+                    "cuda": "≤ 13.0",
+                    "hourly_price": 5.98,
+                    "original_hourly_price": 7.97,
+                    "discount_label": "7.5折",
+                    "provider": "AutoDL",
+                    "provider_mode": "autodl_elastic",
+                    "tags": ["缓存优化"],
+                },
+                {
+                    "id": "41d846924e",
+                    "region": "西北B区",
+                    "machine": "611机",
+                    "gpu_model": "vGPU-32GB",
+                    "gpu_memory_gb": 32,
+                    "available": 1,
+                    "total": 8,
+                    "cpu": "16 核 Xeon Platinum 8352V",
+                    "memory_gb": 62,
+                    "system_disk_gb": 30,
+                    "data_disk_gb": 50,
+                    "data_disk_expand_gb": 4411,
+                    "driver": "595.58.03",
+                    "cuda": "≤ 13.2",
+                    "hourly_price": 1.68,
+                    "original_hourly_price": 1.77,
+                    "discount_label": "9.5折",
+                    "provider": "AutoDL",
+                    "provider_mode": "autodl_elastic",
+                    "tags": [],
+                },
+            ],
+            "instances": [
+                {
+                    "id": "1a4d48a0d9-a416943c",
+                    "name": "policynew",
+                    "region": "重庆A区",
+                    "machine": "150机",
+                    "status": "运行中",
+                    "gpu": "CPU * 1卡",
+                    "health": "正常",
+                    "billing": "包年包月",
+                    "release_time": "到期15天后释放 2026-07-05 18:12:33",
+                    "system_disk_usage": "76.40%",
+                    "data_disk_usage": "73.38%",
+                    "quick_tools": ["JupyterLab", "AutoPanel", "实例监控", "自定义服务"],
+                },
+                {
+                    "id": "7d794cbd77-09e61a2c",
+                    "name": "手串",
+                    "region": "重庆A区",
+                    "machine": "155机",
+                    "status": "运行中",
+                    "gpu": "CPU * 1卡",
+                    "health": "正常",
+                    "billing": "按量计费",
+                    "release_time": "关机15天后释放",
+                    "system_disk_usage": "56.18%",
+                    "data_disk_usage": "0.00%",
+                    "quick_tools": ["JupyterLab", "AutoPanel", "实例监控", "自定义服务"],
+                },
+                {
+                    "id": "80d0408bc2-26d0c9b7",
+                    "name": "数字人",
+                    "region": "重庆A区",
+                    "machine": "027机",
+                    "status": "运行中",
+                    "gpu": "RTX 4090D * 1卡",
+                    "health": "正常",
+                    "billing": "按量计费",
+                    "release_time": "关机15天后释放",
+                    "system_disk_usage": "24.50%",
+                    "data_disk_usage": "0.88%",
+                    "quick_tools": ["JupyterLab", "AutoPanel", "实例监控", "自定义服务"],
+                },
+            ],
+            "templates": [
+                {
+                    "id": "wan22",
+                    "name": "Wan2.2 视频生成",
+                    "description": "预装 CUDA / PyTorch / JupyterLab，启动后直接进入工作区。",
+                    "image": "a9/wan2.2:cuda12-runtime",
+                    "gpu_hint": "RTX 4090 24GB+",
+                },
+                {
+                    "id": "ltx23",
+                    "name": "LTX 2.3 生成工作流",
+                    "description": "镜像内置依赖与模型目录约定，支持弹性实例一键拉起。",
+                    "image": "a9/ltx2.3:cuda12-runtime",
+                    "gpu_hint": "RTX 4090 / 5090",
+                },
+                {
+                    "id": "comfyui",
+                    "name": "ComfyUI WebUI",
+                    "description": "面向应用视角的预装环境，由 A9 统一计费和入口治理。",
+                    "image": "a9/comfyui:wan-ltx",
+                    "gpu_hint": "单卡可用",
+                },
+            ],
+        }
+    )
+
+
+if FRONTEND_DIST.exists():
+    app.mount("/compute/assets", StaticFiles(directory=FRONTEND_DIST / "assets"), name="compute-assets")
+
+
+@app.get("/")
+async def root():
+    return RedirectResponse(url="/compute")
+
+
+@app.get("/compute")
+async def compute_page():
+    index_file = FRONTEND_DIST / "index.html"
+    if index_file.exists():
+        return FileResponse(index_file)
+    return {"err_code": 1, "error": "frontend not built. run: cd frontend && npm install && npm run build"}
+
+
+@app.get("/compute/")
+async def compute_page_slash():
+    return await compute_page()
+
+
+@app.get("/compute/{path:path}")
+async def compute_page_path(path: str):
+    return await compute_page()
+
+
+if __name__ == "__main__":
+    uvicorn.run(
+        app="api:app",
+        host=os.getenv("HOST", "0.0.0.0"),
+        port=int(os.getenv("PORT", "6111")),
+        workers=1,
+        reload=False,
+    )

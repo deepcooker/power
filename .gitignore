@@ -1,0 +1,28 @@
+# Dependencies
+node_modules/
+
+# Build output
+dist/
+a9_compute_admin/dist/
+
+# Runtime logs
+logs/
+*.log
+
+# Python cache
+__pycache__/
+*.py[cod]
+.pytest_cache/
+
+# Local notebooks/checkpoints
+.ipynb_checkpoints/
+
+# Environment and local config
+.env
+.env.*
+!.env.example
+.DS_Store
+
+# Tool caches
+.vite/
+.cache/
