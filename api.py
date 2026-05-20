@@ -1,6 +1,7 @@
 import os
 from datetime import datetime, timezone
 from pathlib import Path
+from typing import Optional
 
 import uvicorn
 from fastapi import FastAPI
@@ -88,13 +89,13 @@ class WorkflowRunRequest(BaseModel):
     templateId: str
     mode: str
     prompt: str
-    negativePrompt: str | None = None
+    negativePrompt: Optional[str] = None
     ratio: str = "9:16"
     quality: str = "1080P"
-    durationSeconds: int | None = 6
-    imageCount: int | None = 1
-    styleStrength: str | None = "medium"
-    seed: str | None = None
+    durationSeconds: Optional[int] = 6
+    imageCount: Optional[int] = 1
+    styleStrength: Optional[str] = "medium"
+    seed: Optional[str] = None
 
 
 def estimate_workflow_cost(payload: WorkflowRunRequest):
