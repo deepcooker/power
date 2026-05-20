@@ -26,3 +26,6 @@ __pycache__/
 # Tool caches
 .vite/
 .cache/
+
+# Local sensitive handoff notes
+DEPLOY_HANDOFF_SENSITIVE.md
