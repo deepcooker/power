@@ -664,13 +664,19 @@ function WorkflowRunPage() {
       <div className="workflow-studio">
         <aside className="workflow-input-panel">
           <h2>输入参数</h2>
+          <div className="workflow-mode-switch">
+            {['文生图', '文生视频', '图生视频'].map((item, index) => <button className={index === 2 ? 'active' : ''} key={item}><strong>{item}</strong><span>{index === 0 ? '1-4张' : index === 1 ? '4-8秒' : '参考图驱动'}</span></button>)}
+          </div>
           <label><span>参考图</span><div className="upload-box">拖拽上传图片</div></label>
           <div className="workflow-asset-strip">{['人物参考', '背景参考', '风格参考'].map((item) => <span key={item}>{item}</span>)}</div>
           <label><span>提示词</span><textarea value="电影感镜头，人物回头，柔和光线，浅景深，细节丰富" readOnly /></label>
+          <label><span>负向提示词</span><input value="低清晰度、畸变、过曝、多余肢体" readOnly /></label>
           <div className="workflow-prompt-chips">{promptChips.map((chip) => <button key={chip}>{chip}</button>)}</div>
           <label><span>比例</span><div><button className="active">9:16</button><button>16:9</button><button>1:1</button></div></label>
           <label><span>时长</span><div><button>4s</button><button className="active">6s</button><button>8s</button></div></label>
           <label><span>清晰度</span><div><button>720P</button><button className="active">1080P</button></div></label>
+          <label><span>生成数量</span><div><button>1</button><button className="active">2</button><button>4</button></div></label>
+          <label><span>风格强度</span><div><button>低</button><button className="active">中</button><button>高</button></div></label>
           <label><span>Seed</span><input value="238471" readOnly /></label>
         </aside>
         <section className="workflow-canvas-panel">

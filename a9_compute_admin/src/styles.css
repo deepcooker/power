@@ -10714,6 +10714,37 @@ button { cursor: pointer; }
   margin: 0 0 16px;
   font-size: 18px;
 }
+.workflow-mode-switch {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 8px;
+  margin-bottom: 14px;
+}
+.workflow-mode-switch button {
+  height: auto;
+  min-height: 62px;
+  display: grid;
+  place-items: center;
+  align-content: center;
+  gap: 4px;
+  padding: 8px;
+  border: 1px solid #d5d9e3;
+  border-radius: 6px;
+  background: #fff;
+  color: #445066;
+}
+.workflow-mode-switch button.active {
+  border-color: #315cff;
+  background: #f4f7ff;
+  color: #315cff;
+}
+.workflow-mode-switch strong {
+  font-size: 14px;
+}
+.workflow-mode-switch span {
+  color: #8a92a3;
+  font-size: 12px;
+}
 .workflow-input-panel label {
   display: grid;
   gap: 8px;
