@@ -590,6 +590,11 @@ function WorkflowDetailPage() {
     ['电商运营', '商品图转视频能直接拿去做投放素材，失败会退回费用。', '4.8'],
     ['独立创作者', '参数不复杂，适合不会搭节点的人快速试镜头。', '4.7'],
   ];
+  const modes = [
+    ['文生图', '输入提示词生成封面、海报和分镜图', '5算力币起'],
+    ['文生视频', '输入剧情和镜头描述生成短视频', '18算力币起'],
+    ['图生视频', '上传参考图生成角色或商品动态', '12算力币起'],
+  ];
   return (
     <main className="workflow-detail-page">
       <section className="workflow-detail-hero">
@@ -610,6 +615,10 @@ function WorkflowDetailPage() {
         <article><h2>适用场景</h2><p>角色动态、商品展示、剧情分镜、社媒短视频、AI 影视预览。</p></article>
         <article><h2>输入参数</h2><p>参考图、提示词、比例、时长、清晰度、seed。节点链路和模型参数默认锁定。</p></article>
         <article><h2>算力配置</h2><p>优先使用 RTX 4090 / 5090，底层可通过 合作商弹性资源执行。</p></article>
+      </section>
+      <section className="workflow-mode-overview">
+        <div className="workflow-section-head"><h2>支持生成模式</h2><div><a href="/compute/workflows/ltx-video/run">打开工作台</a></div></div>
+        <div>{modes.map((item, index) => <article className={index === 2 ? 'active' : ''} key={item[0]}><strong>{item[0]}</strong><p>{item[1]}</p><span>{item[2]}</span></article>)}</div>
       </section>
       <section className="workflow-example-wall">
         <div className="workflow-section-head"><h2>生成案例</h2><div><button className="active">精选</button><button>竖版</button><button>商品</button><button>人物</button></div></div>

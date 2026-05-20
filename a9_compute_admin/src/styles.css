@@ -10376,6 +10376,43 @@ button { cursor: pointer; }
   color: #637083;
   line-height: 1.7;
 }
+.workflow-mode-overview {
+  margin-top: 22px;
+}
+.workflow-mode-overview > div:last-child {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 16px;
+}
+.workflow-mode-overview article {
+  padding: 18px;
+  border: 1px solid #e0e5ef;
+  border-radius: 8px;
+  background: #fff;
+}
+.workflow-mode-overview article.active {
+  border-color: #315cff;
+  background: #f7faff;
+}
+.workflow-mode-overview strong {
+  color: #202633;
+  font-size: 18px;
+}
+.workflow-mode-overview p {
+  min-height: 48px;
+  margin: 10px 0 14px;
+  color: #637083;
+  line-height: 1.7;
+}
+.workflow-mode-overview span {
+  display: inline-flex;
+  height: 28px;
+  align-items: center;
+  padding: 0 10px;
+  border-radius: 14px;
+  background: #fff7ed;
+  color: #f97316;
+}
 .workflow-example-wall {
   margin-top: 22px;
 }
@@ -10568,6 +10605,7 @@ button { cursor: pointer; }
   .workflow-grid,
   .workflow-scenarios,
   .workflow-detail-grid,
+  .workflow-mode-overview > div:last-child,
   .workflow-detail-panels,
   .workflow-review-wall > div:last-child,
   .workflow-related > div:last-child,
@@ -10592,6 +10630,7 @@ button { cursor: pointer; }
   .workflow-readiness > div:last-child,
   .workflow-scenarios,
   .workflow-detail-grid,
+  .workflow-mode-overview > div:last-child,
   .workflow-detail-panels,
   .workflow-review-wall > div:last-child,
   .workflow-related > div:last-child,
