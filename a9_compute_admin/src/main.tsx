@@ -69,6 +69,7 @@ function App() {
   const isArtSectionPage = currentPath.startsWith('/compute/app/') || currentPath.startsWith('/compute/art/');
   const isRentPage = currentPath === '/compute/rent';
   const isDashboardPage = currentPath === '/compute/dashboard';
+  const isInstanceDetailPage = currentPath === '/compute/instances/detail';
   const isInstancesPage = currentPath === '/compute/instances';
   const isInstancesProPage = currentPath === '/compute/instances-pro';
   const isFileStorePage = currentPath === '/compute/file-store';
@@ -140,6 +141,10 @@ function App() {
 
   if (isDashboardPage) {
     return <Shell data={data}><DashboardPage data={data} /></Shell>;
+  }
+
+  if (isInstanceDetailPage) {
+    return <Shell data={data}><ComputeInstanceDetailPage data={data} /></Shell>;
   }
 
   if (isInstancesPage) {
@@ -2955,6 +2960,151 @@ function DeployMoreMenu() {
   );
 }
 
+function ComputeInstanceDetailPage({ data }: { data?: ComputePayload }) {
+  const [modal, setModal] = useState<'boot' | 'stop' | 'restart' | 'release' | 'rename' | ''>('');
+  const instance = data?.instances?.[0];
+  const services = [
+    ['JupyterLab', '8888', 'HTTP', '运行中', '打开'],
+    ['SSH', '22', 'TCP', '运行中', '复制'],
+    ['TensorBoard', '6007', 'HTTP', '未启动', '打开'],
+    ['自定义服务', '6006', 'HTTP', '运行中', '打开'],
+    ['AutoPanel', '6008', 'HTTP', '运行中', '打开'],
+  ];
+  const metrics = [
+    ['GPU利用率', '23%', '最近5分钟平均', '12,18,20,24,22,26,23,21'],
+    ['显存占用', '18.2GB', 'RTX 5090 / 32GB', '30,42,48,55,53,57,56,54'],
+    ['CPU使用率', '16%', '22核', '10,12,18,16,20,17,16,14'],
+    ['磁盘IO', '42MB/s', '/root/autodl-tmp', '8,14,20,24,18,22,16,12'],
+  ];
+  const disks = [
+    ['系统盘', '/root', instance?.system_disk_usage ?? '22.1GB / 30GB', '随实例释放'],
+    ['数据盘', '/root/autodl-tmp', instance?.data_disk_usage ?? '38.4GB / 50GB', '关机保留，释放删除'],
+    ['文件存储', '/root/autodl-fs', '231MB / 200GB', '跨实例挂载'],
+    ['公开数据', '/root/autodl-pub', '只读挂载', '平台维护'],
+  ];
+  const events = [
+    ['2026-05-20 15:41:02', '实例开机', '用户操作', '按量计费开始，服务端口开始代理', 'done'],
+    ['2026-05-20 15:40:51', '数据盘挂载', '调度系统', '/root/autodl-tmp 挂载完成', 'done'],
+    ['2026-05-20 15:40:32', '镜像加载', '调度系统', 'PyTorch 2.8.0 / CUDA 13.0 基础镜像加载完成', 'done'],
+    ['2026-05-20 15:39:58', '余额检查', '计费系统', '账户余额满足开机条件', 'done'],
+  ];
+  const bills = [
+    ['2026-05-20 16:00', 'GPU算力', 'RTX 5090 * 1卡', '￥3.98/时', '按量中'],
+    ['2026-05-20 16:00', '系统盘', '30GB', '￥0.10/日', '计费中'],
+    ['2026-05-20 16:00', '文件存储', '免费额度内', '￥0.00', '已抵扣'],
+  ];
+  return (
+    <div className="console-layout">
+      <ConsoleSideBar current="instances" />
+      <main className="compute-instance-detail">
+        <div className="compute-detail-head">
+          <div>
+            <div className="rent-crumb">容器实例 / 实例详情</div>
+            <h1>{instance?.name ?? 'RTX5090-训练实例'}</h1>
+            <p>{instance?.region ?? '西北B区'} / {instance?.machine ?? 'C90机'} · {instance?.id ?? 'instance-941327a885'} · {instance?.gpu ?? 'RTX 5090 * 1卡'}</p>
+          </div>
+          <div>
+            <button onClick={() => setModal('rename')}>改名</button>
+            <button onClick={() => setModal('restart')}>重启</button>
+            <button onClick={() => setModal('stop')}>关机</button>
+            <button onClick={() => setModal('release')}>释放</button>
+          </div>
+        </div>
+        <section className="compute-detail-hero">
+          <div>
+            <span className="compute-state">运行中</span>
+            <h2>PyTorch 2.8.0 / Python 3.11 / CUDA 13.0</h2>
+            <p>当前实例通过平台代理提供 JupyterLab、SSH、自定义服务和 6008 管理入口，适合训练、调试和 WebUI 服务。</p>
+            <div><button>JupyterLab</button><button>终端登录</button><button>AutoPanel-6008</button><button>自定义服务-6006</button></div>
+          </div>
+          <aside>
+            <span>实时费用</span>
+            <strong>￥3.98 / 时</strong>
+            <small>账户余额 ￥1303.96</small>
+          </aside>
+        </section>
+        <section className="compute-metric-grid">
+          {metrics.map((item) => (
+            <article key={item[0]}>
+              <div><span>{item[0]}</span><strong>{item[1]}</strong><p>{item[2]}</p></div>
+              <div className="compute-bars">{item[3].split(',').map((value, index) => <i style={{ height: `${10 + Number(value)}px` }} key={`${item[0]}-${index}`} />)}</div>
+            </article>
+          ))}
+        </section>
+        <div className="compute-detail-grid">
+          <section className="compute-card wide">
+            <div className="compute-card-title"><h2>快捷服务</h2><span>服务地址在开机后自动生成，可按端口协议代理访问</span></div>
+            <div className="compute-service-table">
+              <div className="head"><span>服务</span><span>端口</span><span>协议</span><span>状态</span><span>操作</span></div>
+              {services.map((row) => <div className="row" key={row[0]}>{row.map((cell, index) => <span className={index === 3 ? (cell === '运行中' ? 'ok' : 'muted') : index === 4 ? 'link' : ''} key={cell}>{cell}</span>)}</div>)}
+            </div>
+          </section>
+          <section className="compute-card">
+            <div className="compute-card-title"><h2>SSH 登录</h2><button>复制</button></div>
+            <pre>{`ssh root@connect.lingqu.local -p 29413\npassword: ********`}</pre>
+            <p>也可以在账号安全中配置 SSH 免密登录，开机后自动注入到实例。</p>
+          </section>
+          <section className="compute-card">
+            <div className="compute-card-title"><h2>启动命令</h2><button>编辑</button></div>
+            <pre>{`source /root/miniconda3/bin/activate\ncd /root/autodl-tmp\nbash start.sh --port 6006`}</pre>
+          </section>
+        </div>
+        <section className="compute-card">
+          <div className="compute-card-title"><h2>磁盘与挂载</h2><a href="/compute/file-store">文件存储</a></div>
+          <div className="compute-disk-table">
+            <div className="head"><span>类型</span><span>挂载路径</span><span>用量</span><span>规则</span></div>
+            {disks.map((row) => <div className="row" key={row[0]}>{row.map((cell) => <span key={cell}>{cell}</span>)}</div>)}
+          </div>
+        </section>
+        <div className="compute-detail-grid">
+          <section className="compute-card">
+            <div className="compute-card-title"><h2>运行日志</h2><button>下载</button></div>
+            <pre>{['[16:02:04] nvidia-smi check ok','[16:02:11] service 6006 listening on 0.0.0.0','[16:02:16] jupyter lab started','[16:02:20] proxy tunnel ready'].join('\n')}</pre>
+          </section>
+          <section className="compute-card">
+            <div className="compute-card-title"><h2>费用明细</h2><a href="/compute/billing/detail">完整账单</a></div>
+            <div className="compute-bill-table">
+              {bills.map((row) => <p key={row[0]}><span>{row[0]}</span><strong>{row[1]}</strong><em>{row[2]}</em><b>{row[3]}</b><small>{row[4]}</small></p>)}
+            </div>
+          </section>
+        </div>
+        <section className="compute-card">
+          <div className="compute-card-title"><h2>事件记录</h2><span>最近生命周期事件</span></div>
+          <div className="compute-event-list">
+            {events.map((row) => <article key={row[0]}><i className={row[4]} /><span>{row[0]}</span><strong>{row[1]}</strong><em>{row[2]}</em><p>{row[3]}</p></article>)}
+          </div>
+        </section>
+      </main>
+      {modal && <ComputeInstanceActionModal type={modal} onClose={() => setModal('')} />}
+    </div>
+  );
+}
+
+function ComputeInstanceActionModal({ type, onClose }: { type: 'boot' | 'stop' | 'restart' | 'release' | 'rename'; onClose: () => void }) {
+  const title = type === 'stop' ? '关机确认' : type === 'restart' ? '重启实例' : type === 'release' ? '释放实例' : type === 'rename' ? '修改实例名称' : '开机确认';
+  return (
+    <div className="modal-mask">
+      <section className={`compute-action-modal ${type === 'release' ? 'danger' : ''}`}>
+        <header><h2>{title}</h2><button onClick={onClose}>×</button></header>
+        {type === 'rename' ? (
+          <div className="compute-action-form">
+            <label><span>当前名称</span><input value="RTX5090-训练实例" readOnly /></label>
+            <label><span>新名称</span><input value="lingqu-train-01" readOnly /></label>
+            <p>实例名称只影响控制台展示，不影响实例 ID、端口和计费。</p>
+          </div>
+        ) : (
+          <div className="compute-action-body">
+            <span>{type === 'release' ? '!' : 'i'}</span>
+            <p>{type === 'release' ? '释放后系统盘和数据盘将不可恢复，请确认已备份重要数据。' : type === 'stop' ? '关机后 GPU 计费停止，系统盘和数据盘仍按规则保留。' : type === 'restart' ? '重启会短暂中断 JupyterLab、SSH 和自定义服务连接。' : '开机前会检查余额、库存和实例健康状态。'}</p>
+            <label><input type="checkbox" checked readOnly /> 我已了解本次操作对任务和数据的影响</label>
+          </div>
+        )}
+        <footer><button onClick={onClose}>取消</button><button className="primary" onClick={onClose}>确定</button></footer>
+      </section>
+    </div>
+  );
+}
+
 function InstancesPage({ data }: { data?: ComputePayload }) {
   const rows = data?.instances ?? [];
   return (
@@ -2982,7 +3132,7 @@ function InstancesPage({ data }: { data?: ComputePayload }) {
             <div className="console-row" key={item.id}>
               <span><a>{item.region} / {item.machine}</a><b>{item.id}</b><em>{item.name} ↗</em></span>
               <span><i className="dot blue" />{item.status}{item.gpu.includes('4090') && <small>⊘ 无卡开机</small>}</span>
-              <span>{item.gpu.replace('*', '*')}<a>查看详情</a></span>
+              <span>{item.gpu.replace('*', '*')}<a href="/compute/instances/detail">查看详情</a></span>
               <span>系统盘 {item.system_disk_usage}<small>数据盘 {item.data_disk_usage}</small></span>
               <span><i className="dot green" />{item.health}</span>
               <span>{item.billing}</span>
