@@ -761,6 +761,11 @@ function MyWorkflowsPage() {
     ['商品主图动态展示', '草稿', 'v0.3', '128', '9算力币/次', 'product'],
     ['Wan2.2 剧情分镜', '审核中', 'v1.1', '2,041', '18算力币/次', 'cinema'],
   ];
+  const audits = [
+    ['Wan2.2 剧情分镜', '待审核', '预计 2 小时内完成'],
+    ['数字人口播片段', '素材复核', '需补充封面示例'],
+    ['赛博风格转绘', '准备上架', '定价已确认'],
+  ];
   return (
     <main className="workflow-runs-page my-workflows-page">
       <div className="workflow-section-head">
@@ -772,7 +777,25 @@ function MyWorkflowsPage() {
         <div><span>发布工作流</span><strong>12</strong><p>3 个正在审核，2 个草稿</p></div>
         <div><span>平均评分</span><strong>4.8</strong><p>来自 1,204 条用户反馈</p></div>
       </section>
+      <section className="workflow-author-dashboard">
+        <article>
+          <h2>收益趋势</h2>
+          <div className="workflow-earnings-chart">{['42%', '68%', '54%', '82%', '75%', '92%', '88%'].map((height, index) => <span style={{ height }} key={index} />)}</div>
+          <p>近 7 日运行量稳定增长，商品营销类模板转化最高。</p>
+        </article>
+        <article>
+          <h2>审核队列</h2>
+          {audits.map((item) => <div className="workflow-audit-row" key={item[0]}><span>{item[0]}</span><b>{item[1]}</b><em>{item[2]}</em></div>)}
+        </article>
+        <article>
+          <h2>快捷操作</h2>
+          <button onClick={() => setModal('create')}>复制官方模板</button>
+          <button onClick={() => setModal('version')}>管理版本</button>
+          <button onClick={() => setModal('share')}>生成分享链接</button>
+        </article>
+      </section>
       <section className="my-workflow-table">
+        <div className="my-workflow-toolbar"><strong>工作流列表</strong><div><button>批量改价</button><button>导出数据</button><button>下架</button></div></div>
         <div className="head"><span>工作流</span><span>状态</span><span>版本</span><span>运行量</span><span>价格</span><span>操作</span></div>
         {mine.map((row) => (
           <div className="row" key={row[0]}>
