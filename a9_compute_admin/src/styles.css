@@ -2591,6 +2591,12 @@ button { cursor: pointer; }
 .billing-data-row.contracts {
   grid-template-columns: 18% 18% 16% 16% 12% 10% 10%;
 }
+.billing-data-row.access {
+  grid-template-columns: 22% 20% 20% 18% 20%;
+}
+.billing-data-row.subaccounts {
+  grid-template-columns: 18% 16% 22% 14% 18% 12%;
+}
 .billing-data-row .action {
   color: #315cff;
   cursor: pointer;
@@ -3095,6 +3101,34 @@ button { cursor: pointer; }
 .settings-select {
   width: 180px;
   padding: 0 12px;
+}
+.security-card a,
+.settings-select,
+.settings-list button {
+  cursor: pointer;
+}
+.account-action-modal {
+  width: 640px;
+}
+.account-action-form label {
+  grid-template-columns: 92px minmax(0, 1fr);
+}
+.account-action-form label div {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+.account-action-form label button {
+  height: 30px;
+  padding: 0 14px;
+  border: 1px solid #d5d9e3;
+  border-radius: 3px;
+  background: #fff;
+  color: #555;
+}
+.account-action-form label button.active {
+  border-color: #315cff;
+  color: #315cff;
 }
 
 .server-page {

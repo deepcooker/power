@@ -2935,12 +2935,13 @@ function BillingApplyModal({ type, onClose }: { type: 'invoice' | 'contract'; on
 }
 
 function AccountSecurityPage() {
+  const [modal, setModal] = useState<'password' | 'phone' | 'realname' | 'wechat' | 'email' | ''>('');
   const rows = [
-    ['登录密码', '安全性高的密码可以使账号更安全。建议您定期更换密码，设置一个包含字母和数字且长度超过8位的密码', '已设置', '修改', true],
-    ['手机绑定', '您已绑定了手机177****7953您的手机号可以直接用于登录、找回密码等', '已绑定', '修改', true],
-    ['实名认证', '实名认证后可以使用AutoDL更完整的功能，如打开实例的自定义服务等', '已认证', '查看', true],
-    ['微信绑定', '您已绑定微信，可快速扫码登录', '已绑定', '解绑', true],
-    ['邮箱绑定', '绑定邮箱后可接收系统消息，如余额不足、实例即将到期、实例即将释放等消息', '未绑定', '绑定', false],
+    ['登录密码', '安全性高的密码可以使账号更安全。建议您定期更换密码，设置一个包含字母和数字且长度超过8位的密码', '已设置', '修改', true, 'password'],
+    ['手机绑定', '您已绑定了手机177****7953您的手机号可以直接用于登录、找回密码等', '已绑定', '修改', true, 'phone'],
+    ['实名认证', '实名认证后可以使用灵渠更完整的功能，如打开实例的自定义服务等', '已认证', '查看', true, 'realname'],
+    ['微信绑定', '您已绑定微信，可快速扫码登录', '已绑定', '解绑', true, 'wechat'],
+    ['邮箱绑定', '绑定邮箱后可接收系统消息，如余额不足、实例即将到期、实例即将释放等消息', '未绑定', '绑定', false, 'email'],
   ] as const;
   return (
     <div className="console-layout">
@@ -2952,16 +2953,18 @@ function AccountSecurityPage() {
             <section className="security-card" key={row[0]}>
               <div><h2>{row[0]}</h2><p>{row[1]}</p></div>
               <span className={row[4] ? 'ok' : 'warn'}>{row[4] ? '◎' : 'ⓘ'} {row[2]}</span>
-              <a>{row[3]}</a>
+              <a onClick={() => setModal(row[5])}>{row[3]}</a>
             </section>
           ))}
         </div>
       </main>
+      {modal && <AccountActionModal type={modal} onClose={() => setModal('')} />}
     </div>
   );
 }
 
 function AccountSubPage({ kind }: { kind: 'access' | 'sub' | 'settings' }) {
+  const [modal, setModal] = useState<'sub' | 'settings' | 'access' | ''>('');
   if (kind === 'settings') {
     return (
       <div className="console-layout">
@@ -2969,29 +2972,63 @@ function AccountSubPage({ kind }: { kind: 'access' | 'sub' | 'settings' }) {
         <main className="console-main account-main">
           <h1>设置</h1>
           <div className="settings-list">
-            <section><h2>消息通知</h2><p>余额不足、实例即将到期、实例即将释放等消息通知</p><button className="switch on" /><span>开启</span></section>
-            <section><h2>默认地区</h2><p>租用新实例时默认选择的地区</p><div className="select-like settings-select">重庆A区 <span>⌄</span></div></section>
-            <section><h2>自动释放提醒</h2><p>实例释放前通知账号绑定手机和邮箱</p><button className="switch on" /><span>开启</span></section>
+            <section><h2>消息通知</h2><p>余额不足、实例即将到期、实例即将释放等消息通知</p><button className="switch on" onClick={() => setModal('settings')} /><span>开启</span></section>
+            <section><h2>默认地区</h2><p>租用新实例时默认选择的地区</p><div className="select-like settings-select" onClick={() => setModal('settings')}>重庆A区 <span>⌄</span></div></section>
+            <section><h2>自动释放提醒</h2><p>实例释放前通知账号绑定手机和邮箱</p><button className="switch on" onClick={() => setModal('settings')} /><span>开启</span></section>
           </div>
         </main>
+        {modal && <AccountActionModal type={modal} onClose={() => setModal('')} />}
       </div>
     );
   }
   const config = kind === 'access'
-    ? { title: '访问记录', filter: '访问时间：', heads: ['访问时间', '登录IP', '登录地区', '登录方式', '状态'] }
-    : { title: '子账号', filter: '账号名称：', heads: ['子账号', '角色', '权限范围', '状态', '创建时间', '操作'] };
+    ? { title: '访问记录', filter: '访问时间：', heads: ['访问时间', '登录IP', '登录地区', '登录方式', '状态'], rows: [['2026-05-20 16:42:11', '47.103.49.82', '上海', '密码登录', '成功'], ['2026-05-19 21:18:03', '101.88.23.12', '上海', '微信扫码', '成功']] }
+    : { title: '子账号', filter: '账号名称：', heads: ['子账号', '角色', '权限范围', '状态', '创建时间', '操作'], rows: [['ops@yaochuang.tech', '运维', '实例/镜像/账单只读', '启用', '2026-05-18 12:11:09', '编辑'], ['finance@yaochuang.tech', '财务', '账单/发票/合同', '启用', '2026-05-18 12:18:22', '编辑']] };
   return (
     <div className="console-layout">
       <ConsoleSideBar current="account" />
       <main className="console-main billing-main">
         <h1>{config.title}</h1>
-        <div className="billing-filter wide"><label>{config.filter}</label><div className="date-range"><span>▣</span><em>开始日期</em><b>至</b><em>结束日期</em></div>{kind === 'sub' && <button className="blue small-action">创建子账号</button>}</div>
+        <div className="billing-filter wide"><label>{config.filter}</label><div className="date-range"><span>▣</span><em>开始日期</em><b>至</b><em>结束日期</em></div>{kind === 'sub' && <button className="blue small-action" onClick={() => setModal('sub')}>创建子账号</button>}</div>
         <div className="billing-table">
           <div className={`billing-head ${kind === 'access' ? 'access' : 'subaccounts'}`}>{config.heads.map((item) => <span key={item}>{item}</span>)}</div>
-          <div className="empty-row">暂无数据</div>
+          {config.rows.map((row) => <div className={`billing-data-row ${kind === 'access' ? 'access' : 'subaccounts'}`} key={row[0]}>{row.map((cell, index) => <span className={index === row.length - 1 && kind === 'sub' ? 'action' : ''} key={cell} onClick={() => kind === 'sub' && index === row.length - 1 ? setModal('sub') : kind === 'access' ? setModal('access') : undefined}>{cell}</span>)}</div>)}
         </div>
-        <div className="console-pager billing-pager">共 0 条 <span>‹</span><b>1</b><span>›</span><button>10条/页 ⌄</button> 前往 <input value="1" readOnly /> 页</div>
+        <div className="console-pager billing-pager">共 {config.rows.length} 条 <span>‹</span><b>1</b><span>›</span><button>10条/页 ⌄</button> 前往 <input value="1" readOnly /> 页</div>
       </main>
+      {modal && <AccountActionModal type={modal} onClose={() => setModal('')} />}
+    </div>
+  );
+}
+
+function AccountActionModal({ type, onClose }: { type: 'password' | 'phone' | 'realname' | 'wechat' | 'email' | 'sub' | 'settings' | 'access'; onClose: () => void }) {
+  const titleMap = {
+    password: '修改登录密码',
+    phone: '修改绑定手机',
+    realname: '实名认证信息',
+    wechat: '微信绑定',
+    email: '绑定邮箱',
+    sub: '子账号权限',
+    settings: '修改设置',
+    access: '访问记录详情',
+  };
+  return (
+    <div className="modal-mask">
+      <section className="compute-action-modal account-action-modal">
+        <header><h2>{titleMap[type]}</h2><button onClick={onClose}>×</button></header>
+        <div className="compute-action-form account-action-form">
+          {type === 'password' && <><label><span>当前密码</span><input value="********" readOnly /></label><label><span>新密码</span><input value="************" readOnly /></label><label><span>验证码</span><input value="329814" readOnly /></label></>}
+          {type === 'phone' && <><label><span>当前手机</span><input value="177****7953" readOnly /></label><label><span>新手机号</span><input value="17717677953" readOnly /></label><label><span>短信验证码</span><input value="816204" readOnly /></label></>}
+          {type === 'realname' && <><label><span>认证主体</span><input value="个人认证" readOnly /></label><label><span>认证状态</span><input value="已认证" readOnly /></label><label><span>可用权限</span><div><button className="active">自定义服务</button><button className="active">发票合同</button></div></label></>}
+          {type === 'wechat' && <><label><span>微信状态</span><input value="已绑定" readOnly /></label><label><span>操作</span><div><button className="active">解绑当前微信</button><button>重新扫码</button></div></label></>}
+          {type === 'email' && <><label><span>邮箱地址</span><input value="ops@yaochuang.tech" readOnly /></label><label><span>验证码</span><input value="640219" readOnly /></label></>}
+          {type === 'sub' && <><label><span>子账号</span><input value="ops@yaochuang.tech" readOnly /></label><label><span>角色</span><div><button className="active">运维</button><button>财务</button><button>只读</button></div></label><label><span>权限</span><div><button className="active">实例</button><button className="active">镜像</button><button>账单</button></div></label></>}
+          {type === 'settings' && <><label><span>默认地区</span><div><button className="active">重庆A区</button><button>北京B区</button><button>西北B区</button></div></label><label><span>消息通知</span><div><button className="active">短信</button><button className="active">邮箱</button><button>微信</button></div></label></>}
+          {type === 'access' && <><label><span>登录IP</span><input value="47.103.49.82" readOnly /></label><label><span>登录地区</span><input value="上海" readOnly /></label><label><span>登录方式</span><input value="密码登录" readOnly /></label></>}
+          <p>当前为静态页面状态，后续接入账号接口后会提交真实变更并记录审计日志。</p>
+        </div>
+        <footer><button onClick={onClose}>取消</button><button className="primary" onClick={onClose}>{type === 'realname' || type === 'access' ? '关闭' : '保存'}</button></footer>
+      </section>
     </div>
   );
 }
