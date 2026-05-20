@@ -10773,6 +10773,87 @@ button { cursor: pointer; }
   margin: 0;
   color: #8a92a3;
 }
+.workflow-run-control {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  margin-bottom: 18px;
+  padding: 14px;
+  border: 1px solid #e0e5ef;
+  border-radius: 8px;
+  background: #fff;
+}
+.workflow-run-control div {
+  display: flex;
+  flex: 1;
+  max-width: 520px;
+  gap: 10px;
+}
+.workflow-run-control input {
+  flex: 1;
+  height: 34px;
+  padding: 0 12px;
+  border: 1px solid #d5d9e3;
+  border-radius: 4px;
+  color: #7a8496;
+}
+.workflow-run-control button {
+  height: 34px;
+  padding: 0 12px;
+  border: 1px solid #d5d9e3;
+  border-radius: 4px;
+  background: #fff;
+  color: #445066;
+}
+.workflow-run-control button.active,
+.workflow-run-control div button {
+  border-color: #315cff;
+  background: #315cff;
+  color: #fff;
+}
+.workflow-run-control nav {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+.workflow-run-ops {
+  display: grid;
+  grid-template-columns: minmax(0, 0.76fr) minmax(0, 1.24fr);
+  gap: 16px;
+  margin-bottom: 18px;
+}
+.workflow-run-ops article {
+  padding: 18px;
+  border: 1px solid #e0e5ef;
+  border-radius: 8px;
+  background: #fff;
+}
+.workflow-run-ops h2 {
+  margin: 0 0 14px;
+  font-size: 18px;
+}
+.workflow-run-ops p,
+.workflow-run-ops div {
+  display: grid;
+  grid-template-columns: 1fr auto;
+  gap: 8px 12px;
+  margin: 0;
+  padding: 10px 0;
+  border-top: 1px solid #edf0f5;
+}
+.workflow-run-ops span {
+  color: #202633;
+  font-weight: 600;
+}
+.workflow-run-ops b {
+  color: #315cff;
+}
+.workflow-run-ops em {
+  grid-column: 1 / -1;
+  color: #8a92a3;
+  font-style: normal;
+}
 .workflow-run-card {
   overflow: hidden;
 }
@@ -10972,8 +11053,17 @@ button { cursor: pointer; }
 @media (max-width: 980px) {
   .workflow-run-detail-body,
   .workflow-runs-grid,
-  .workflow-run-summary {
+  .workflow-run-summary,
+  .workflow-run-ops {
     grid-template-columns: 1fr 1fr;
+  }
+  .workflow-run-control {
+    align-items: flex-start;
+    flex-direction: column;
+  }
+  .workflow-run-control div {
+    width: 100%;
+    max-width: none;
   }
   .workflow-run-detail-body aside,
   .run-detail-log {
@@ -10984,8 +11074,12 @@ button { cursor: pointer; }
   .workflow-run-detail-body,
   .workflow-runs-grid,
   .workflow-run-summary,
+  .workflow-run-ops,
   .run-detail-assets div {
     grid-template-columns: 1fr;
+  }
+  .workflow-run-control div {
+    flex-direction: column;
   }
 }
 .workflow-author-panel {

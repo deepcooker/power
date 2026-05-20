@@ -683,6 +683,11 @@ function WorkflowNodes() {
 
 function WorkflowRunsPage() {
   const [detail, setDetail] = useState<string[]>([]);
+  const queue = [
+    ['#WF-240518', '图生视频', '生成中', '68%'],
+    ['#WF-240519', '文生图', '排队中', '预计 1 分钟'],
+    ['#WF-240520', '商品视频', '回传中', '12MB/s'],
+  ];
   return (
     <main className="workflow-runs-page">
       <div className="workflow-section-head"><h1>创作记录</h1><div><button className="active">全部</button><button>运行中</button><button>成功</button><button>失败</button></div></div>
@@ -691,6 +696,14 @@ function WorkflowRunsPage() {
         <article><span>算力币消耗</span><strong>386</strong><p>失败任务已自动退回</p></article>
         <article><span>平均耗时</span><strong>86s</strong><p>近 7 日任务均值</p></article>
         <article><span>成功率</span><strong>96.4%</strong><p>素材缺失为主要失败原因</p></article>
+      </section>
+      <section className="workflow-run-control">
+        <div><input value="搜索工作流 / 任务ID / 提示词" readOnly /><button>搜索</button></div>
+        <nav><button className="active">今天</button><button>近7天</button><button>近30天</button><button>导出记录</button><button>批量删除</button></nav>
+      </section>
+      <section className="workflow-run-ops">
+        <article><h2>失败原因</h2><p><span>素材尺寸不符</span><b>42%</b></p><p><span>提示词违规</span><b>31%</b></p><p><span>回传超时</span><b>18%</b></p></article>
+        <article><h2>最近队列</h2>{queue.map((item) => <div key={item[0]}><span>{item[0]}</span><b>{item[1]}</b><em>{item[2]} · {item[3]}</em></div>)}</article>
       </section>
       <section className="workflow-runs-grid">
         {workflowRuns.map((run) => (
