@@ -941,6 +941,7 @@ function ArtMarketPage() {
           <h2>探索</h2>
           {[
             ['应用广场', '/compute/app/market'],
+            ['工作流广场', '/compute/workflows'],
             ['公共模型', '/compute/app/models'],
             ['我的', '/compute/app/mine'],
             ['应用实例', '/compute/app/instances'],
@@ -948,11 +949,22 @@ function ArtMarketPage() {
             ['钱包', '/compute/app/billing'],
             ['账单', '/compute/app/billing/detail'],
             ['发票', '/compute/app/billing/orders'],
-          ].map((item, index) => <a className={index === 0 ? 'active' : ''} href={item[1]} key={item[0]}><span>{['⌘','◇','▦','▥','▤','▣','▥','▧'][index]}</span>{item[0]}</a>)}
+          ].map((item, index) => <a className={index === 0 ? 'active' : ''} href={item[1]} key={item[0]}><span>{['⌘','◇','⬡','▦','▥','▤','▣','▥','▧'][index]}</span>{item[0]}</a>)}
           <button>微信客服</button>
         </aside>
         <main className="art-market-main">
           <h1>应用广场</h1>
+          <section className="art-workflow-bridge">
+            <div>
+              <span>AI Workflow</span>
+              <h2>文生图 / 文生视频工作流</h2>
+              <p>从热门模板直接进入创作台，填写提示词和素材即可生成结果。适合短视频、电商素材、角色 IP 和风格化内容。</p>
+              <nav><a href="/compute/workflows">进入工作流广场</a><a href="/compute/workflows/ltx-video/run">立即生成</a></nav>
+            </div>
+            <aside>
+              {['LTX2.3 图生视频', 'Wan2.2 文生视频', '商品图动态展示'].map((item) => <a href="/compute/workflows/ltx-video" key={item}>{item}<b>12算力币起</b></a>)}
+            </aside>
+          </section>
           <div className="art-market-tabs"><a className={!isWeekly && !isBase ? 'active' : ''} href="/compute/app/market">全部(176)</a><i /> <a className={isWeekly ? 'active' : ''} href="/compute/app/market/weekly">周榜</a><i /> <a className={isBase ? 'active' : ''} href="/compute/app/market/base">基础镜像</a></div>
           <div className="art-tags">{tags.map((tag, index) => <button onClick={() => { window.location.href = tag === '全部' ? '/compute/app/market' : `/compute/app/market/tag/${encodeURIComponent(tag)}`; }} className={`${index % 5 === 0 ? 'orange' : index % 3 === 0 ? 'green' : index % 2 === 0 ? 'purple' : ''} ${activeTag === tag ? 'active' : ''}`} key={tag}>{tag}</button>)}</div>
           {(isSearch || isTag || isWeekly || isBase) && <div className="art-result-summary"><strong>{isWeekly ? '周榜：按下载量排序' : isBase ? '基础镜像：可直接创建实例' : isSearch ? '搜索结果：Zimage LORA' : `标签筛选：${activeTag}`}</strong><span>共找到 {visibleApps.length} 个应用</span><a href="/compute/app/market">清除筛选</a></div>}
