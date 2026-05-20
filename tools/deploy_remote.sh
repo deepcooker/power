@@ -7,6 +7,7 @@ REMOTE="${REMOTE_USER}@${REMOTE_HOST}"
 REMOTE_DIR="${REMOTE_DIR:-/www/wwwroot/power}"
 REMOTE_SERVICE="${REMOTE_SERVICE:-power-compute.service}"
 BRANCH="${BRANCH:-main}"
+PUBLIC_DOMAINS="${PUBLIC_DOMAINS:-yaochuang.tech www.yaochuang.tech cloud.yaochuang.tech}"
 
 ROOT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
 REPORT_DIR="${ROOT_DIR}/deploy_reports"
@@ -111,6 +112,14 @@ echo
 curl -sS http://${REMOTE_HOST}/api/health
 "
 
+run_capture "公网 HTTPS 域名验证" env -u HTTP_PROXY -u HTTPS_PROXY -u ALL_PROXY -u http_proxy -u https_proxy -u all_proxy bash -lc "
+for domain in ${PUBLIC_DOMAINS}; do
+  echo \"# https://\${domain}/\"
+  curl -sS -I -L --max-time 15 \"https://\${domain}/\" | tail -20
+  echo
+done
+"
+
 rm -f "${ARCHIVE}"
 
 {
@@ -118,6 +127,9 @@ rm -f "${ARCHIVE}"
   printf -- '- 首页：http://%s/compute\n' "${REMOTE_HOST}"
   printf -- '- 应用市场：http://%s/compute/app/market\n' "${REMOTE_HOST}"
   printf -- '- 健康检查：http://%s/api/health\n' "${REMOTE_HOST}"
+  printf -- '- 官网：https://yaochuang.tech/\n'
+  printf -- '- 官网：www：https://www.yaochuang.tech/\n'
+  printf -- '- 应用市场：https://cloud.yaochuang.tech/\n'
   printf '\n## 结论\n\n发布脚本执行完成。若上方公网 HTTP 验证为 `200 OK` 且 health 返回 `status: ok`，发布成功。\n'
 } >> "${REPORT}"
 
