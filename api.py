@@ -193,6 +193,13 @@ def estimate_workflow_cost(payload: WorkflowRunRequest):
     }
 
 
+def workflow_template_title(template_id: str, mode: str):
+    for template in WORKFLOW_TEMPLATES:
+        if template["id"] == template_id:
+            return template["title"]
+    return "文生图生成" if mode == "text_to_image" else "文生视频生成" if mode == "text_to_video" else "图生视频生成"
+
+
 @app.get("/api/health")
 async def health():
     return ok({"service": "a9-compute-admin", "status": "ok"})
@@ -430,16 +437,17 @@ async def workflow_estimate(payload: WorkflowRunRequest):
 @app.post("/api/workflows/runs")
 async def create_workflow_run(payload: WorkflowRunRequest):
     estimate = estimate_workflow_cost(payload)
+    now = datetime.now(timezone.utc)
     run = {
-        "id": f"WF-{int(datetime.now(timezone.utc).timestamp())}",
+        "id": f"WF-{int(now.timestamp() * 1000)}",
         "templateId": payload.templateId,
-        "title": "文生图生成" if payload.mode == "text_to_image" else "文生视频生成" if payload.mode == "text_to_video" else "图生视频生成",
+        "title": workflow_template_title(payload.templateId, payload.mode),
         "status": "queued",
         "statusText": "排队中",
         "mode": payload.mode,
         "durationText": "-",
         "costText": f"{estimate['total']}算力币",
-        "createdAt": datetime.now(timezone.utc).strftime("%Y-%m-%d %H:%M"),
+        "createdAt": now.strftime("%Y-%m-%d %H:%M"),
         "prompt": payload.prompt,
         "ratio": payload.ratio,
         "quality": payload.quality,
