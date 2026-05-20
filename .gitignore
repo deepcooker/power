@@ -8,6 +8,7 @@ a9_compute_admin/dist/
 # Runtime logs
 logs/
 *.log
+runtime_data/
 
 # Python cache
 __pycache__/

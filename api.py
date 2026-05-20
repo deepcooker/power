@@ -1,3 +1,4 @@
+import json
 import os
 from datetime import datetime, timezone
 from pathlib import Path
@@ -13,6 +14,7 @@ from fastapi.staticfiles import StaticFiles
 
 ROOT = Path(__file__).resolve().parent
 FRONTEND_DIST = ROOT / "a9_compute_admin" / "dist"
+WORKFLOW_RUNS_FILE = Path(os.getenv("WORKFLOW_RUNS_FILE", str(ROOT / "runtime_data" / "workflow_runs.json")))
 
 app = FastAPI(title="A9 Compute Admin API", version="0.1.0")
 
@@ -98,7 +100,7 @@ WORKFLOW_TEMPLATES = [
     },
 ]
 
-WORKFLOW_RUNS = [
+DEFAULT_WORKFLOW_RUNS = [
     {
         "id": "WF-240518",
         "templateId": "ltx-video",
@@ -164,6 +166,28 @@ WORKFLOW_RUNS = [
         "resultType": "image",
     },
 ]
+
+
+def load_workflow_runs():
+    try:
+        if WORKFLOW_RUNS_FILE.exists():
+            data = json.loads(WORKFLOW_RUNS_FILE.read_text(encoding="utf-8"))
+            if isinstance(data, list):
+                return data
+    except Exception:
+        pass
+    return list(DEFAULT_WORKFLOW_RUNS)
+
+
+def save_workflow_runs():
+    try:
+        WORKFLOW_RUNS_FILE.parent.mkdir(parents=True, exist_ok=True)
+        WORKFLOW_RUNS_FILE.write_text(json.dumps(WORKFLOW_RUNS, ensure_ascii=False, indent=2), encoding="utf-8")
+    except Exception:
+        pass
+
+
+WORKFLOW_RUNS = load_workflow_runs()
 
 
 class WorkflowRunRequest(BaseModel):
@@ -455,6 +479,7 @@ async def create_workflow_run(payload: WorkflowRunRequest):
         "resultType": "image" if payload.mode == "text_to_image" else "video",
     }
     WORKFLOW_RUNS.insert(0, run)
+    save_workflow_runs()
     return ok(run)
 
 
