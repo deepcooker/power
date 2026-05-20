@@ -71,12 +71,6 @@ const workflowShowcase = [
   ['主播口播开场', '数字人', '00:12', 'avatar'],
   ['潮玩盲盒海报', '文生图', '1 张', 'video'],
 ];
-const workflowReadiness = [
-  ['模板广场', '92%', '广场、分类、榜单、案例展示'],
-  ['生成工作台', '86%', '输入参数、队列、预扣费用、结果操作'],
-  ['创作记录', '86%', '任务筛选、详情、失败原因、复跑'],
-  ['发布管理', '83%', '新建、版本、分享、审核、收益'],
-];
 const workflowRuns = workflowRunRecords.map((run) => {
   const template = workflowTemplates.find((item) => item.id === run.templateId);
   return [run.title, run.statusText, run.durationText, run.costText, run.createdAt, workflowCoverClass[template?.cover ?? ''] ?? 'video'];
@@ -513,12 +507,6 @@ function WorkflowsPage() {
       </section>
       <section className="workflow-strip">
         {['今日运行 12,486 次', '平均出片 94 秒', '热门工作流 68 个', '支持 合作商弹性算力'].map((item) => <span key={item}>{item}</span>)}
-      </section>
-      <section className="workflow-readiness">
-        <div className="workflow-section-head"><h2>工作流能力覆盖</h2><div><a href="/compute/workflows/ltx-video/run">进入创作台</a></div></div>
-        <div>
-          {workflowReadiness.map((item) => <article key={item[0]}><header><strong>{item[0]}</strong><b>{item[1]}</b></header><i><em style={{ width: item[1] }} /></i><p>{item[2]}</p></article>)}
-        </div>
       </section>
       <section className="workflow-featured">
         <div className="workflow-section-head"><h2>精选模板</h2><div><button className="active">增长最快</button><button>商业投放</button><button>创作者推荐</button></div></div>
