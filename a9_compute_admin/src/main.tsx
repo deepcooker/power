@@ -2,7 +2,7 @@ import { createRoot } from 'react-dom/client';
 import { useEffect, useMemo, useState } from 'react';
 import { api } from './api';
 import { createWorkflowRun, estimateWorkflowCost, workflowApi, workflowRunRecords, workflowTemplates } from './workflowApi';
-import type { WorkflowCostEstimate, WorkflowRunPayload, WorkflowRunRecord } from './workflowApi';
+import type { WorkflowCostEstimate, WorkflowRunPayload, WorkflowRunRecord, WorkflowTemplate } from './workflowApi';
 import type { ComputeInstance, ComputePayload, GpuResource } from './types';
 import type { ReactNode } from 'react';
 import './styles.css';
@@ -49,7 +49,8 @@ const workflowCoverClass: Record<string, string> = {
   'workflow-cyber-style': 'cyber',
   'workflow-comic-storyboard': 'comic',
 };
-const workflowCards = workflowTemplates.map((item) => [
+function workflowTemplateToCard(item: WorkflowTemplate) {
+  return [
   item.title,
   item.summary,
   item.category,
@@ -57,7 +58,14 @@ const workflowCards = workflowTemplates.map((item) => [
   item.priceText,
   workflowCoverClass[item.cover] ?? 'video',
   item.tags[0] ?? '精选',
-]);
+  ];
+}
+function workflowTemplateToMineRow(item: WorkflowTemplate, index: number) {
+  const states = ['已发布', '草稿', '审核中', '已发布', '已发布', '草稿'];
+  const versions = ['v1.8', 'v0.3', 'v1.1', 'v2.0', 'v1.4', 'v0.8'];
+  return [item.title, states[index % states.length], versions[index % versions.length], item.runCount, item.priceText, workflowCoverClass[item.cover] ?? 'video'];
+}
+const workflowCards = workflowTemplates.map(workflowTemplateToCard);
 const workflowFeatured = [
   ['爆款短视频', '一张人物图生成 6 秒竖版运镜', '今日 2,186 次运行', 'video'],
   ['商品种草片', '主图、卖点词、背景音乐一键成片', '商家模板', 'product'],
@@ -849,11 +857,20 @@ function WorkflowRunDetailModal({ run, onClose }: { run: string[]; onClose: () =
 
 function MyWorkflowsPage() {
   const [modal, setModal] = useState<'create' | 'version' | 'share' | ''>('');
-  const mine = [
-    ['LTX2.3 图生视频', '已发布', 'v1.8', '8,624', '12算力币/次', 'video'],
-    ['商品主图动态展示', '草稿', 'v0.3', '128', '9算力币/次', 'product'],
-    ['Wan2.2 剧情分镜', '审核中', 'v1.1', '2,041', '18算力币/次', 'cinema'],
-  ];
+  const [templates, setTemplates] = useState<WorkflowTemplate[]>(workflowTemplates);
+  useEffect(() => {
+    let alive = true;
+    workflowApi.templates().then(({ items }) => {
+      if (alive && items.length > 0) {
+        setTemplates(items);
+      }
+    }).catch(() => undefined);
+    return () => {
+      alive = false;
+    };
+  }, []);
+  const mine = templates.map(workflowTemplateToMineRow);
+  const templateCards = templates.map(workflowTemplateToCard);
   const audits = [
     ['Wan2.2 剧情分镜', '待审核', '预计 2 小时内完成'],
     ['数字人口播片段', '素材复核', '需补充封面示例'],
@@ -899,7 +916,7 @@ function MyWorkflowsPage() {
       </section>
       <section className="workflow-template-shelf">
         <div className="workflow-section-head"><h2>可复制模板</h2><div><button className="active">官方模板</button><button>最近使用</button><button>收藏</button></div></div>
-        <div>{workflowCards.slice(0, 4).map((card) => <WorkflowCard card={card} key={card[0]} />)}</div>
+        <div>{templateCards.slice(0, 4).map((card) => <WorkflowCard card={card} key={card[0]} />)}</div>
       </section>
       {modal && <MyWorkflowModal type={modal} onClose={() => setModal('')} />}
     </main>
