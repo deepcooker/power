@@ -10511,6 +10511,22 @@ button { cursor: pointer; }
   background: #fafbff;
   color: #8a92a3;
 }
+.workflow-asset-strip {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 8px;
+  margin: -4px 0 14px;
+}
+.workflow-asset-strip span {
+  height: 58px;
+  display: grid;
+  place-items: center;
+  border: 1px solid #e1e7f2;
+  border-radius: 6px;
+  background: linear-gradient(135deg, #f8fbff, #eef4ff);
+  color: #657287;
+  font-size: 12px;
+}
 .workflow-input-panel label div:not(.upload-box) {
   display: flex;
   flex-wrap: wrap;
@@ -10525,6 +10541,18 @@ button { cursor: pointer; }
 }
 .workflow-input-panel button.active {
   border-color: #315cff;
+  color: #315cff;
+}
+.workflow-prompt-chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin: -4px 0 14px;
+}
+.workflow-prompt-chips button {
+  height: 26px;
+  border-radius: 13px;
+  background: #f4f7ff;
   color: #315cff;
 }
 .workflow-result-stage {
@@ -10550,6 +10578,26 @@ button { cursor: pointer; }
 }
 .workflow-result-stage p {
   color: #cbd5e1;
+}
+.workflow-result-toolbar {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: flex-end;
+  gap: 10px;
+  margin-top: 12px;
+}
+.workflow-result-toolbar button {
+  height: 30px;
+  padding: 0 12px;
+  border: 1px solid #d5d9e3;
+  border-radius: 3px;
+  background: #fff;
+  color: #445066;
+}
+.workflow-result-toolbar button:last-child {
+  border-color: #315cff;
+  background: #315cff;
+  color: #fff;
 }
 .workflow-frame-strip {
   display: grid;
@@ -10586,6 +10634,34 @@ button { cursor: pointer; }
 .workflow-log p {
   margin: 5px 0;
 }
+.workflow-queue-card,
+.workflow-cost-confirm {
+  padding: 14px;
+  border: 1px solid #dce5f7;
+  border-radius: 8px;
+  background: #f7faff;
+}
+.workflow-queue-card {
+  margin-bottom: 8px;
+}
+.workflow-queue-card span,
+.workflow-cost-confirm span {
+  color: #637083;
+}
+.workflow-queue-card strong,
+.workflow-cost-confirm strong {
+  display: block;
+  margin: 6px 0;
+  color: #202633;
+  font-size: 22px;
+}
+.workflow-queue-card p {
+  display: block;
+  margin: 0;
+  padding: 0;
+  border: 0;
+  color: #7a8496;
+}
 .workflow-run-config p {
   display: flex;
   justify-content: space-between;
@@ -10596,6 +10672,18 @@ button { cursor: pointer; }
 }
 .workflow-run-config span {
   color: #6b7280;
+}
+.workflow-cost-confirm {
+  margin-top: 14px;
+  background: #fff7ed;
+  border-color: #fed7aa;
+}
+.workflow-cost-confirm strong {
+  color: #f97316;
+}
+.workflow-cost-confirm em {
+  color: #9a5a16;
+  font-style: normal;
 }
 .workflow-run-config button {
   width: 100%;
@@ -10621,6 +10709,39 @@ button { cursor: pointer; }
 .workflow-run-config small {
   color: #7a8496;
   line-height: 1.6;
+}
+@media (max-width: 1180px) {
+  .workflow-studio {
+    grid-template-columns: 1fr;
+  }
+  .workflow-input-panel,
+  .workflow-canvas-panel,
+  .workflow-run-config {
+    min-height: auto;
+  }
+}
+@media (max-width: 760px) {
+  .workflow-studio-top {
+    height: auto;
+    align-items: flex-start;
+    flex-direction: column;
+    padding: 14px;
+  }
+  .workflow-studio-top nav,
+  .workflow-result-toolbar {
+    width: 100%;
+    overflow: auto;
+  }
+  .workflow-studio {
+    padding: 10px;
+  }
+  .workflow-result-stage {
+    height: 300px;
+  }
+  .workflow-frame-strip,
+  .workflow-asset-strip {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
 }
 .workflow-runs-grid {
   display: grid;

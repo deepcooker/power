@@ -571,7 +571,7 @@ function WorkflowDetailPage() {
     <main className="workflow-detail-page">
       <section className="workflow-detail-hero">
         <div className="workflow-detail-media">
-          <div className="preview-main">LTX2.3<br />Video Preview</div>
+          <div className="preview-main">LTX2.3<br />视频预览</div>
           <div><span /> <span /> <span /></div>
         </div>
         <aside>
@@ -631,6 +631,7 @@ function WorkflowDetailPage() {
 function WorkflowRunPage() {
   const [publishOpen, setPublishOpen] = useState(false);
   const [resultMode, setResultMode] = useState<'idle' | 'running' | 'done'>('idle');
+  const promptChips = ['电影感', '慢速推镜', '浅景深', '柔和逆光', '商业质感'];
   return (
     <main className="workflow-run-page">
       <header className="workflow-studio-top">
@@ -641,25 +642,30 @@ function WorkflowRunPage() {
         <aside className="workflow-input-panel">
           <h2>输入参数</h2>
           <label><span>参考图</span><div className="upload-box">拖拽上传图片</div></label>
+          <div className="workflow-asset-strip">{['人物参考', '背景参考', '风格参考'].map((item) => <span key={item}>{item}</span>)}</div>
           <label><span>提示词</span><textarea value="电影感镜头，人物回头，柔和光线，浅景深，细节丰富" readOnly /></label>
+          <div className="workflow-prompt-chips">{promptChips.map((chip) => <button key={chip}>{chip}</button>)}</div>
           <label><span>比例</span><div><button className="active">9:16</button><button>16:9</button><button>1:1</button></div></label>
           <label><span>时长</span><div><button>4s</button><button className="active">6s</button><button>8s</button></div></label>
           <label><span>清晰度</span><div><button>720P</button><button className="active">1080P</button></div></label>
           <label><span>Seed</span><input value="238471" readOnly /></label>
         </aside>
         <section className="workflow-canvas-panel">
-          <div className={`workflow-result-stage ${resultMode}`}><span>{resultMode === 'done' ? '生成完成' : resultMode === 'running' ? '生成中 68%' : '等待生成'}</span><strong>{resultMode === 'done' ? 'Video Result' : 'LTX2.3 Preview'}</strong><p>{resultMode === 'done' ? '已生成 6 秒竖版视频，可下载或发布。' : resultMode === 'running' ? '弹性算力实例已启动，ComfyUI 工作流正在执行。' : '运行后将在这里显示视频结果和中间帧。'}</p></div>
+          <div className={`workflow-result-stage ${resultMode}`}><span>{resultMode === 'done' ? '生成完成' : resultMode === 'running' ? '生成中 68%' : '等待生成'}</span><strong>{resultMode === 'done' ? '竖版短片结果' : 'LTX2.3 预览区'}</strong><p>{resultMode === 'done' ? '已生成 6 秒竖版视频，可下载或发布。' : resultMode === 'running' ? '弹性算力实例已启动，工作流正在执行。' : '运行后将在这里显示视频结果和中间帧。'}</p></div>
+          <div className="workflow-result-toolbar"><button>下载</button><button>设为封面</button><button>复制参数</button><button onClick={() => setPublishOpen(true)}>发布案例</button></div>
           <div className="workflow-frame-strip">{['首帧', '中间帧', '尾帧', '封面'].map((item) => <span key={item}>{item}</span>)}</div>
           <WorkflowNodes />
           <div className="workflow-log"><b>运行日志</b><p>[17:22:14] 等待提交任务</p><p>[17:22:16] 合作商弹性资源预检查完成</p><p>[17:22:26] 工作流参数已写入黑盒节点</p><p>[17:23:04] 输出文件等待回传</p></div>
         </section>
         <aside className="workflow-run-config">
           <h2>运行配置</h2>
+          <div className="workflow-queue-card"><span>当前队列</span><strong>{resultMode === 'running' ? '3 / 12' : '空闲'}</strong><p>{resultMode === 'running' ? '预计 42 秒后完成' : '提交后自动分配弹性算力'}</p></div>
           <p><span>推荐 GPU</span><strong>RTX 4090 / 5090</strong></p>
           <p><span>地区</span><strong>北京B区 / 重庆A区</strong></p>
           <p><span>预计耗时</span><strong>60-120 秒</strong></p>
           <p><span>本次费用</span><strong>12 算力币</strong></p>
           <p><span>账户余额</span><strong>1303.96</strong></p>
+          <div className="workflow-cost-confirm"><span>预扣费用</span><strong>12 算力币</strong><em>失败自动退回</em></div>
           <button onClick={() => setResultMode(resultMode === 'idle' ? 'running' : resultMode === 'running' ? 'done' : 'idle')}>{resultMode === 'idle' ? '立即运行' : resultMode === 'running' ? '查看完成态' : '再次运行'}</button>
           <div className="workflow-run-actions"><button onClick={() => setPublishOpen(true)}>发布作品</button><button onClick={() => { window.location.href = '/compute/workflow-runs'; }}>记录</button></div>
           <small>提交后会创建运行记录，任务完成后自动保存结果。</small>
@@ -807,7 +813,7 @@ function WorkflowPublishModal({ onClose }: { onClose: () => void }) {
       <section className="workflow-publish-modal">
         <header><h2>发布作品</h2><button onClick={onClose}>×</button></header>
         <div className="workflow-publish-body">
-          <div className="publish-preview">Video Result</div>
+          <div className="publish-preview">视频结果</div>
           <label><span>作品标题</span><input value="赛博角色回头短片" readOnly /></label>
           <label><span>发布到</span><div><button className="active">个人作品</button><button>工作流案例</button><button>私密</button></div></label>
           <label><span>标签</span><div><button className="active">LTX2.3</button><button className="active">图生视频</button><button>商业可用</button></div></label>
