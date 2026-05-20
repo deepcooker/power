@@ -604,19 +604,75 @@ function WorkflowNodes() {
 }
 
 function WorkflowRunsPage() {
+  const [detail, setDetail] = useState<string[]>([]);
   return (
     <main className="workflow-runs-page">
       <div className="workflow-section-head"><h1>创作记录</h1><div><button className="active">全部</button><button>运行中</button><button>成功</button><button>失败</button></div></div>
+      <section className="workflow-run-summary">
+        <article><span>今日生成</span><strong>42</strong><p>视频 18 / 图片 24</p></article>
+        <article><span>算力币消耗</span><strong>386</strong><p>失败任务已自动退回</p></article>
+        <article><span>平均耗时</span><strong>86s</strong><p>近 7 日任务均值</p></article>
+        <article><span>成功率</span><strong>96.4%</strong><p>素材缺失为主要失败原因</p></article>
+      </section>
       <section className="workflow-runs-grid">
         {workflowRuns.map((run) => (
           <article className="workflow-run-card" key={run[0] + run[4]}>
             <div className={`workflow-cover ${run[5]}`}><span>{run[1]}</span><strong>{run[0]}</strong></div>
             <div><h2>{run[0]}</h2><p>{run[4]}</p><span>耗时 {run[2]}</span><span>{run[3]}</span></div>
-            <footer><button>查看结果</button><button onClick={() => { window.location.href = '/compute/workflows/ltx-video/run'; }}>再次运行</button></footer>
+            <footer><button onClick={() => setDetail(run)}>查看结果</button><button onClick={() => { window.location.href = '/compute/workflows/ltx-video/run'; }}>再次运行</button></footer>
           </article>
         ))}
       </section>
+      {detail.length > 0 && <WorkflowRunDetailModal run={detail} onClose={() => setDetail([])} />}
     </main>
+  );
+}
+
+function WorkflowRunDetailModal({ run, onClose }: { run: string[]; onClose: () => void }) {
+  const isFailed = run[1].includes('失败');
+  const isVideo = run[0].includes('视频');
+  const steps = isFailed ? ['已提交', '素材校验', '已退回'] : ['已提交', '算力就绪', '生成完成', '结果入库'];
+  return (
+    <div className="modal-mask">
+      <section className="workflow-run-detail-modal">
+        <header><h2>{run[0]}</h2><button onClick={onClose}>×</button></header>
+        <div className="workflow-run-detail-body">
+          <div className={`run-detail-preview ${run[5]} ${isFailed ? 'failed' : ''}`}>
+            <span>{run[1]}</span>
+            <strong>{isFailed ? '未生成结果' : isVideo ? '视频结果' : '图片结果'}</strong>
+            <p>{isFailed ? '素材尺寸不满足当前模板要求，费用已退回。' : '可下载、发布为案例，或基于相同参数再次运行。'}</p>
+          </div>
+          <aside>
+            <p><span>任务状态</span><strong>{run[1]}</strong></p>
+            <p><span>提交时间</span><strong>{run[4]}</strong></p>
+            <p><span>运行耗时</span><strong>{run[2]}</strong></p>
+            <p><span>消耗费用</span><strong>{run[3]}</strong></p>
+            <p><span>工作流版本</span><strong>v1.8</strong></p>
+          </aside>
+          <section className="run-detail-params">
+            <h3>输入参数</h3>
+            <div><span>提示词</span><p>电影感镜头，人物回头，柔和光线，浅景深，细节丰富</p></div>
+            <div><span>比例/时长</span><p>9:16 / 6s / 1080P</p></div>
+            <div><span>Seed</span><p>238471</p></div>
+          </section>
+          <section className="run-detail-assets">
+            <h3>生成产物</h3>
+            <div>
+              {['封面', '首帧', '中间帧', isVideo ? 'MP4' : '原图'].map((item) => <span key={item}>{item}</span>)}
+            </div>
+          </section>
+          <section className="run-detail-timeline">
+            <h3>任务进度</h3>
+            <div>{steps.map((step, index) => <span className={index === steps.length - 1 ? 'current' : ''} key={step}>{step}</span>)}</div>
+          </section>
+          <section className="run-detail-log">
+            <h3>运行日志</h3>
+            <pre>{isFailed ? '[17:01:20] 素材检查失败\n[17:01:21] 任务取消，算力币已退回' : '[17:18:04] 任务创建\n[17:18:22] 弹性算力就绪\n[17:19:36] 视频生成完成\n[17:19:42] 输出已保存'}</pre>
+          </section>
+        </div>
+        <footer><button onClick={onClose}>关闭</button><button onClick={() => { window.location.href = '/compute/workflows/ltx-video/run'; }}>再次运行</button><button className="primary">下载结果</button></footer>
+      </section>
+    </div>
   );
 }
 
