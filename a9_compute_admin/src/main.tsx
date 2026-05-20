@@ -820,9 +820,9 @@ function MyWorkflowModal({ type, onClose }: { type: 'create' | 'version' | 'shar
       <section className="workflow-publish-modal my-workflow-modal">
         <header><h2>{title}</h2><button onClick={onClose}>×</button></header>
         <div className="workflow-publish-body">
-          {type === 'create' && <><label><span>创建方式</span><div><button className="active">复制官方模板</button><button>导入 API JSON</button><button>空白工作流</button></div></label><label><span>名称</span><input value="新的图生视频工作流" readOnly /></label><label><span>可见性</span><div><button className="active">私有</button><button>公开审核</button></div></label></>}
-          {type === 'version' && <><label><span>当前版本</span><input value="v1.8 已发布" readOnly /></label><label><span>最近版本</span><div><button className="active">v1.8</button><button>v1.7</button><button>v1.6</button></div></label><p>版本保存后会生成快照，可回滚参数 schema、封面和计费配置。</p></>}
-          {type === 'share' && <><label><span>分享链接</span><input value="https://yaochuang.tech/compute/workflows/ltx-video" readOnly /></label><label><span>权限</span><div><button className="active">可运行</button><button>可复制</button><button>仅预览</button></div></label><p>公开分享不会暴露黑盒节点和底层 workflow_api.json。</p></>}
+          {type === 'create' && <><div className="workflow-modal-preview"><span>官方模板</span><strong>LTX2.3 图生视频</strong><p>已包含输入校验、计费配置、结果回传和案例发布字段。</p></div><label><span>创建方式</span><div><button className="active">复制官方模板</button><button>导入 API JSON</button><button>空白工作流</button></div></label><label><span>名称</span><input value="新的图生视频工作流" readOnly /></label><label><span>分类</span><div><button className="active">图生视频</button><button>文生视频</button><button>商品营销</button></div></label><label><span>可见性</span><div><button className="active">私有</button><button>公开审核</button></div></label></>}
+          {type === 'version' && <><label><span>当前版本</span><input value="v1.8 已发布" readOnly /></label><label><span>最近版本</span><div><button className="active">v1.8</button><button>v1.7</button><button>v1.6</button></div></label><div className="workflow-version-list"><p><b>v1.8</b><span>新增 1080P 输出，优化失败退费逻辑</span></p><p><b>v1.7</b><span>调整提示词 schema，兼容批量运行</span></p><p><b>v1.6</b><span>首次公开发布</span></p></div><p>版本保存后会生成快照，可回滚参数 schema、封面和计费配置。</p></>}
+          {type === 'share' && <><label><span>分享链接</span><input value="https://yaochuang.tech/compute/workflows/ltx-video" readOnly /></label><label><span>权限</span><div><button className="active">可运行</button><button>可复制</button><button>仅预览</button></div></label><div className="workflow-share-summary"><span>访问人数 328</span><span>运行转化 18.6%</span><span>链接 7 天内有效</span></div><p>公开分享不会暴露黑盒节点和底层 workflow_api.json。</p></>}
         </div>
         <footer><button onClick={onClose}>取消</button><button className="primary" onClick={onClose}>确定</button></footer>
       </section>
@@ -839,7 +839,9 @@ function WorkflowPublishModal({ onClose }: { onClose: () => void }) {
           <div className="publish-preview">视频结果</div>
           <label><span>作品标题</span><input value="赛博角色回头短片" readOnly /></label>
           <label><span>发布到</span><div><button className="active">个人作品</button><button>工作流案例</button><button>私密</button></div></label>
+          <label><span>封面帧</span><div><button>首帧</button><button className="active">中间帧</button><button>尾帧</button></div></label>
           <label><span>标签</span><div><button className="active">LTX2.3</button><button className="active">图生视频</button><button>商业可用</button></div></label>
+          <div className="workflow-publish-checks"><span>已隐藏输入素材</span><span>允许展示参数</span><span>不公开原始节点</span></div>
           <p>发布后可在工作流详情页展示案例，优秀作品可获得算力币奖励。</p>
         </div>
         <footer><button onClick={onClose}>取消</button><button className="primary" onClick={onClose}>发布</button></footer>
