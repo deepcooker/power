@@ -9830,6 +9830,15 @@ button { cursor: pointer; }
   background: #315cff;
   color: #fff;
 }
+.workflow-section-head a {
+  height: 30px;
+  display: inline-flex;
+  align-items: center;
+  padding: 0 14px;
+  border-radius: 15px;
+  background: #111827;
+  color: #fff;
+}
 .workflow-layout {
   display: grid;
   grid-template-columns: minmax(0, 1fr) 280px;
@@ -10350,6 +10359,90 @@ button { cursor: pointer; }
   display: flex;
   gap: 10px;
   padding: 0 14px 14px;
+}
+.workflow-author-panel {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 16px;
+  margin-bottom: 18px;
+}
+.workflow-author-panel div {
+  padding: 20px;
+  border: 1px solid #e0e5ef;
+  border-radius: 8px;
+  background: #fff;
+}
+.workflow-author-panel span {
+  color: #637083;
+}
+.workflow-author-panel strong {
+  display: block;
+  margin: 10px 0 6px;
+  color: #202633;
+  font-size: 28px;
+}
+.workflow-author-panel p {
+  margin: 0;
+  color: #8a92a3;
+}
+.my-workflow-table {
+  overflow: hidden;
+  border: 1px solid #e0e5ef;
+  border-radius: 8px;
+  background: #fff;
+}
+.my-workflow-table .head,
+.my-workflow-table .row {
+  display: grid;
+  grid-template-columns: 1.5fr 0.7fr 0.7fr 0.8fr 0.8fr 1.1fr;
+  align-items: center;
+  min-height: 54px;
+  padding: 0 18px;
+  column-gap: 14px;
+}
+.my-workflow-table .head {
+  background: #f1f3f7;
+  color: #555;
+}
+.my-workflow-table .row {
+  border-top: 1px solid #edf0f5;
+}
+.my-workflow-table .row span:first-child {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-weight: 600;
+}
+.my-workflow-table i {
+  width: 32px;
+  height: 32px;
+  border-radius: 6px;
+  background: linear-gradient(135deg, #315cff, #7c3aed);
+}
+.my-workflow-table i.product {
+  background: linear-gradient(135deg, #0f766e, #f59e0b);
+}
+.my-workflow-table i.cinema {
+  background: linear-gradient(135deg, #111827, #d76d77);
+}
+.my-workflow-table .row span:last-child {
+  display: flex;
+  gap: 12px;
+}
+.my-workflow-table a {
+  color: #315cff;
+  cursor: pointer;
+}
+.workflow-template-shelf {
+  margin-top: 24px;
+}
+.workflow-template-shelf > div:last-child {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 16px;
+}
+.my-workflow-modal {
+  width: 640px;
 }
 .workflow-publish-modal {
   width: 620px;

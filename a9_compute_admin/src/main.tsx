@@ -80,6 +80,7 @@ function App() {
   const currentPath = window.location.pathname.replace(/\/$/, '');
   const isHomePage = currentPath === '/compute/home';
   const isWorkflowRunsPage = currentPath === '/compute/workflow-runs';
+  const isMyWorkflowsPage = currentPath === '/compute/workflows/mine';
   const isWorkflowRunPage = currentPath === '/compute/workflows/ltx-video/run';
   const isWorkflowDetailPage = currentPath === '/compute/workflows/ltx-video';
   const isWorkflowsPage = currentPath === '/compute/workflows';
@@ -152,6 +153,10 @@ function App() {
 
   if (isWorkflowRunsPage) {
     return <Shell data={data}><WorkflowRunsPage /></Shell>;
+  }
+
+  if (isMyWorkflowsPage) {
+    return <Shell data={data}><MyWorkflowsPage /></Shell>;
   }
 
   if (isWorkflowRunPage) {
@@ -459,7 +464,7 @@ function WorkflowsPage() {
           <span>LingQu Workflow</span>
           <h1>AI工作流创作平台</h1>
           <p>把成熟的文生视频、图生视频和商业创作链路封装成黑盒工作流。上传素材，填写提示词，直接生成结果。</p>
-          <div><a href="/compute/workflows/ltx-video/run">立即生成</a><a href="/compute/workflow-runs">查看记录</a></div>
+          <div><a href="/compute/workflows/ltx-video/run">立即生成</a><a href="/compute/workflows/mine">我的工作流</a></div>
         </div>
         <div className="workflow-hero-stage">
           <article className="big"><b>LTX2.3</b><strong>角色图转电影短片</strong><em>12算力币/次</em></article>
@@ -470,7 +475,7 @@ function WorkflowsPage() {
       <section className="workflow-strip">
         {['今日运行 12,486 次', '平均出片 94 秒', '热门工作流 68 个', '支持 AutoDL 弹性算力'].map((item) => <span key={item}>{item}</span>)}
       </section>
-      <section className="workflow-section-head"><h2>热门工作流</h2><div>{cats.map((cat, index) => <button className={index === 0 ? 'active' : ''} key={cat}>{cat}</button>)}</div></section>
+      <section className="workflow-section-head"><h2>热门工作流</h2><div>{cats.map((cat, index) => <button className={index === 0 ? 'active' : ''} key={cat}>{cat}</button>)}<a href="/compute/workflows/mine">我的工作流</a></div></section>
       <div className="workflow-layout">
         <section className="workflow-grid">
           {workflowCards.map((card) => <WorkflowCard card={card} key={card[0]} />)}
@@ -612,6 +617,59 @@ function WorkflowRunsPage() {
         ))}
       </section>
     </main>
+  );
+}
+
+function MyWorkflowsPage() {
+  const [modal, setModal] = useState<'create' | 'version' | 'share' | ''>('');
+  const mine = [
+    ['LTX2.3 图生视频', '已发布', 'v1.8', '8,624', '12算力币/次', 'video'],
+    ['商品主图动态展示', '草稿', 'v0.3', '128', '9算力币/次', 'product'],
+    ['Wan2.2 剧情分镜', '审核中', 'v1.1', '2,041', '18算力币/次', 'cinema'],
+  ];
+  return (
+    <main className="workflow-runs-page my-workflows-page">
+      <div className="workflow-section-head">
+        <h1>我的工作流</h1>
+        <div><button className="active">全部</button><button>已发布</button><button>草稿</button><button>审核中</button><button onClick={() => setModal('create')}>新建工作流</button></div>
+      </div>
+      <section className="workflow-author-panel">
+        <div><span>创作者收益</span><strong>￥1,286.40</strong><p>本月工作流被运行 8,752 次</p></div>
+        <div><span>发布工作流</span><strong>12</strong><p>3 个正在审核，2 个草稿</p></div>
+        <div><span>平均评分</span><strong>4.8</strong><p>来自 1,204 条用户反馈</p></div>
+      </section>
+      <section className="my-workflow-table">
+        <div className="head"><span>工作流</span><span>状态</span><span>版本</span><span>运行量</span><span>价格</span><span>操作</span></div>
+        {mine.map((row) => (
+          <div className="row" key={row[0]}>
+            <span><i className={row[5]} />{row[0]}</span><span>{row[1]}</span><span>{row[2]}</span><span>{row[3]}</span><span>{row[4]}</span>
+            <span><a href="/compute/workflows/ltx-video/run">编辑</a><a onClick={() => setModal('version')}>版本</a><a onClick={() => setModal('share')}>分享</a></span>
+          </div>
+        ))}
+      </section>
+      <section className="workflow-template-shelf">
+        <div className="workflow-section-head"><h2>可复制模板</h2><div><button className="active">官方模板</button><button>最近使用</button><button>收藏</button></div></div>
+        <div>{workflowCards.slice(0, 4).map((card) => <WorkflowCard card={card} key={card[0]} />)}</div>
+      </section>
+      {modal && <MyWorkflowModal type={modal} onClose={() => setModal('')} />}
+    </main>
+  );
+}
+
+function MyWorkflowModal({ type, onClose }: { type: 'create' | 'version' | 'share'; onClose: () => void }) {
+  const title = type === 'create' ? '新建工作流' : type === 'version' ? '版本信息' : '分享工作流';
+  return (
+    <div className="modal-mask">
+      <section className="workflow-publish-modal my-workflow-modal">
+        <header><h2>{title}</h2><button onClick={onClose}>×</button></header>
+        <div className="workflow-publish-body">
+          {type === 'create' && <><label><span>创建方式</span><div><button className="active">复制官方模板</button><button>导入 API JSON</button><button>空白工作流</button></div></label><label><span>名称</span><input value="新的图生视频工作流" readOnly /></label><label><span>可见性</span><div><button className="active">私有</button><button>公开审核</button></div></label></>}
+          {type === 'version' && <><label><span>当前版本</span><input value="v1.8 已发布" readOnly /></label><label><span>最近版本</span><div><button className="active">v1.8</button><button>v1.7</button><button>v1.6</button></div></label><p>版本保存后会生成快照，可回滚参数 schema、封面和计费配置。</p></>}
+          {type === 'share' && <><label><span>分享链接</span><input value="https://yaochuang.tech/compute/workflows/ltx-video" readOnly /></label><label><span>权限</span><div><button className="active">可运行</button><button>可复制</button><button>仅预览</button></div></label><p>公开分享不会暴露黑盒节点和底层 workflow_api.json。</p></>}
+        </div>
+        <footer><button onClick={onClose}>取消</button><button className="primary" onClick={onClose}>确定</button></footer>
+      </section>
+    </div>
   );
 }
 
