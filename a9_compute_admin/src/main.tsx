@@ -54,21 +54,21 @@ const workflowRuns = [
   ['赛博风格转绘', '生成失败', '00:00:52', '0算力币', '2026-05-20 16:44', 'cyber'],
 ];
 const imageRows = [
-  { uuid: 'image-e55db9ae41', name: 'new0415', size: '20.78GB', status: '就绪', share: '私有镜像', source: 'AutoDL', cache: '重庆区', base: 'Miniconda  conda3\nPython  3.10(ubuntu22.04)\nCUDA  11.8', created: '2026-04-15 13:30:50' },
-  { uuid: 'image-ef24180470', name: 'policy2026', size: '14.97GB', status: '就绪', share: '私有镜像', source: 'AutoDL', cache: '重庆区', base: 'Miniconda  conda3\nPython  3.10(ubuntu22.04)\nCUDA  11.8', created: '2026-01-17 01:11:09' },
-  { uuid: 'image-e76f008b92', name: 'policy_2016', size: '20.24GB', status: '就绪', share: '私有镜像', source: 'AutoDL', cache: '重庆区', base: 'Miniconda  conda3\nPython  3.10(ubuntu22.04)\nCUDA  11.8', created: '2026-01-15 14:20:28' },
-  { uuid: 'image-08c61e993b', name: 'newpolicy', size: '25.63GB', status: '就绪', share: '私有镜像', source: 'AutoDL', cache: '重庆区', base: 'Miniconda  conda3\nPython  3.10(ubuntu22.04)\nCUDA  11.8', created: '2026-01-04 21:44:26' },
-  { uuid: 'image-83271d99d1', name: 'policy', size: '24.14GB', status: '就绪', share: '私有镜像', source: 'AutoDL', cache: '重庆区', base: 'Miniconda  conda3\nPython  3.10(ubuntu22.04)\nCUDA  11.8', created: '2025-11-21 09:04:47' },
+  { uuid: 'image-e55db9ae41', name: 'new0415', size: '20.78GB', status: '就绪', share: '私有镜像', source: '灵渠', cache: '重庆区', base: 'Miniconda  conda3\nPython  3.10(ubuntu22.04)\nCUDA  11.8', created: '2026-04-15 13:30:50' },
+  { uuid: 'image-ef24180470', name: 'policy2026', size: '14.97GB', status: '就绪', share: '私有镜像', source: '灵渠', cache: '重庆区', base: 'Miniconda  conda3\nPython  3.10(ubuntu22.04)\nCUDA  11.8', created: '2026-01-17 01:11:09' },
+  { uuid: 'image-e76f008b92', name: 'policy_2016', size: '20.24GB', status: '就绪', share: '私有镜像', source: '灵渠', cache: '重庆区', base: 'Miniconda  conda3\nPython  3.10(ubuntu22.04)\nCUDA  11.8', created: '2026-01-15 14:20:28' },
+  { uuid: 'image-08c61e993b', name: 'newpolicy', size: '25.63GB', status: '就绪', share: '私有镜像', source: '灵渠', cache: '重庆区', base: 'Miniconda  conda3\nPython  3.10(ubuntu22.04)\nCUDA  11.8', created: '2026-01-04 21:44:26' },
+  { uuid: 'image-83271d99d1', name: 'policy', size: '24.14GB', status: '就绪', share: '私有镜像', source: '灵渠', cache: '重庆区', base: 'Miniconda  conda3\nPython  3.10(ubuntu22.04)\nCUDA  11.8', created: '2025-11-21 09:04:47' },
 ];
 const publicDataRows = [
-  ['argoverse2.0感知数据集', '/root/autodl-pub/argoverse2.0-sensor', '739.02 GB', '数据集', 'https://argoverse.github.io', 'https://argoverse.github.io/user-guide/'],
-  ['Vimeo-90k', '/root/autodl-pub/Vimeo-90k', '81.89 GB', '数据集', 'toflow.csail.mit.edu', 'Vimeo-90k视频超分数据集'],
-  ['CULane', '/root/autodl-pub/CULane', '42.45 GB', '数据集', 'https://xingangpan.github.io/projects/CULane.html', 'CULane is a large scale challenging dataset for academic research on traffic lane detection'],
-  ['TT100K', '/root/autodl-pub/TT100K', '106.77 GB', '数据集', 'https://cg.cs.tsinghua.edu.cn/traffic-sign/', '交通信号灯检测与识别数据集'],
-  ['cifar-100', '/root/autodl-pub/cifar-100', '162 MB', '数据集', 'https://www.cs.toronto.edu/~kriz/cifar.html', 'CIFAR-100图像分类数据集'],
-  ['CUB200-2011', '/root/autodl-pub/CUB200-2011', '1.11 GB', '数据集', 'http://www.vision.caltech.edu/datasets/cub_200_2011/', '鸟类细粒度分类数据集'],
-  ['ModelNet', '/root/autodl-pub/ModelNet', '2.34 GB', '数据集', 'https://modelnet.cs.princeton.edu/', 'The goal of the Princeton ModelNet project is to provide researchers in computer vision, computer graphics, robotics and cognitive science, with a comprehensive clean collection of 3D CAD models for objects.'],
-  ['S3DIS', '/root/autodl-pub/S3DIS', '14.26 GB', '数据集', 'http://buildingparser.stanford.edu/dataset.html', 'Stanford Large-Scale 3D Indoor Spaces Dataset (S3DIS)'],
+  ['argoverse2.0感知数据集', '/root/lingqu-pub/argoverse2.0-sensor', '739.02 GB', '数据集', 'https://argoverse.github.io', 'https://argoverse.github.io/user-guide/'],
+  ['Vimeo-90k', '/root/lingqu-pub/Vimeo-90k', '81.89 GB', '数据集', 'toflow.csail.mit.edu', 'Vimeo-90k视频超分数据集'],
+  ['CULane', '/root/lingqu-pub/CULane', '42.45 GB', '数据集', 'https://xingangpan.github.io/projects/CULane.html', 'CULane is a large scale challenging dataset for academic research on traffic lane detection'],
+  ['TT100K', '/root/lingqu-pub/TT100K', '106.77 GB', '数据集', 'https://cg.cs.tsinghua.edu.cn/traffic-sign/', '交通信号灯检测与识别数据集'],
+  ['cifar-100', '/root/lingqu-pub/cifar-100', '162 MB', '数据集', 'https://www.cs.toronto.edu/~kriz/cifar.html', 'CIFAR-100图像分类数据集'],
+  ['CUB200-2011', '/root/lingqu-pub/CUB200-2011', '1.11 GB', '数据集', 'http://www.vision.caltech.edu/datasets/cub_200_2011/', '鸟类细粒度分类数据集'],
+  ['ModelNet', '/root/lingqu-pub/ModelNet', '2.34 GB', '数据集', 'https://modelnet.cs.princeton.edu/', 'The goal of the Princeton ModelNet project is to provide researchers in computer vision, computer graphics, robotics and cognitive science, with a comprehensive clean collection of 3D CAD models for objects.'],
+  ['S3DIS', '/root/lingqu-pub/S3DIS', '14.26 GB', '数据集', 'http://buildingparser.stanford.edu/dataset.html', 'Stanford Large-Scale 3D Indoor Spaces Dataset (S3DIS)'],
 ];
 
 function App() {
@@ -473,7 +473,7 @@ function WorkflowsPage() {
         </div>
       </section>
       <section className="workflow-strip">
-        {['今日运行 12,486 次', '平均出片 94 秒', '热门工作流 68 个', '支持 AutoDL 弹性算力'].map((item) => <span key={item}>{item}</span>)}
+        {['今日运行 12,486 次', '平均出片 94 秒', '热门工作流 68 个', '支持 合作商弹性算力'].map((item) => <span key={item}>{item}</span>)}
       </section>
       <section className="workflow-section-head"><h2>热门工作流</h2><div>{cats.map((cat, index) => <button className={index === 0 ? 'active' : ''} key={cat}>{cat}</button>)}<a href="/compute/workflows/mine">我的工作流</a></div></section>
       <div className="workflow-layout">
@@ -536,7 +536,7 @@ function WorkflowDetailPage() {
       <section className="workflow-detail-grid">
         <article><h2>适用场景</h2><p>角色动态、商品展示、剧情分镜、社媒短视频、AI 影视预览。</p></article>
         <article><h2>输入参数</h2><p>参考图、提示词、比例、时长、清晰度、seed。节点链路和模型参数默认锁定。</p></article>
-        <article><h2>算力配置</h2><p>优先使用 RTX 4090 / 5090，底层可通过 AutoDL 弹性资源执行。</p></article>
+        <article><h2>算力配置</h2><p>优先使用 RTX 4090 / 5090，底层可通过 合作商弹性资源执行。</p></article>
       </section>
       <section className="workflow-example-wall">
         <div className="workflow-section-head"><h2>生成案例</h2><div><button className="active">精选</button><button>竖版</button><button>商品</button><button>人物</button></div></div>
@@ -576,10 +576,10 @@ function WorkflowRunPage() {
           <label><span>Seed</span><input value="238471" readOnly /></label>
         </aside>
         <section className="workflow-canvas-panel">
-          <div className={`workflow-result-stage ${resultMode}`}><span>{resultMode === 'done' ? '生成完成' : resultMode === 'running' ? '生成中 68%' : '等待生成'}</span><strong>{resultMode === 'done' ? 'Video Result' : 'LTX2.3 Preview'}</strong><p>{resultMode === 'done' ? '已生成 6 秒竖版视频，可下载或发布。' : resultMode === 'running' ? 'AutoDL 弹性实例已启动，ComfyUI 工作流正在执行。' : '运行后将在这里显示视频结果和中间帧。'}</p></div>
+          <div className={`workflow-result-stage ${resultMode}`}><span>{resultMode === 'done' ? '生成完成' : resultMode === 'running' ? '生成中 68%' : '等待生成'}</span><strong>{resultMode === 'done' ? 'Video Result' : 'LTX2.3 Preview'}</strong><p>{resultMode === 'done' ? '已生成 6 秒竖版视频，可下载或发布。' : resultMode === 'running' ? '弹性算力实例已启动，ComfyUI 工作流正在执行。' : '运行后将在这里显示视频结果和中间帧。'}</p></div>
           <div className="workflow-frame-strip">{['首帧', '中间帧', '尾帧', '封面'].map((item) => <span key={item}>{item}</span>)}</div>
           <WorkflowNodes />
-          <div className="workflow-log"><b>运行日志</b><p>[17:22:14] 等待提交任务</p><p>[17:22:16] AutoDL 弹性资源预检查完成</p><p>[17:22:26] 工作流参数已写入黑盒节点</p><p>[17:23:04] 输出文件等待回传</p></div>
+          <div className="workflow-log"><b>运行日志</b><p>[17:22:14] 等待提交任务</p><p>[17:22:16] 合作商弹性资源预检查完成</p><p>[17:22:26] 工作流参数已写入黑盒节点</p><p>[17:23:04] 输出文件等待回传</p></div>
         </section>
         <aside className="workflow-run-config">
           <h2>运行配置</h2>
@@ -1900,7 +1900,7 @@ function ArtInstanceWorkspacePage() {
   ];
   const logs = [
     '[16:20:12] checking container status: stopped',
-    '[16:20:14] mount /root/autodl-tmp ready',
+    '[16:20:14] mount /root/lingqu-tmp ready',
     '[16:20:16] WebUI-6006 waiting for instance boot',
     '[16:20:18] balance precheck required before GPU allocation',
   ];
@@ -1926,12 +1926,12 @@ function ArtInstanceWorkspacePage() {
           <section className="workspace-status">
             <article><span>实例</span><strong>ins-art-zimage-20260518</strong><p>未开机 · 北京B区 · RTX 5090-32G</p></article>
             <article><span>服务</span><strong>WebUI-6006</strong><p>等待开机后自动生成访问地址</p></article>
-            <article><span>数据目录</span><strong>/root/autodl-tmp</strong><p>50GB 临时数据盘</p></article>
+            <article><span>数据目录</span><strong>/root/lingqu-tmp</strong><p>50GB 临时数据盘</p></article>
           </section>
           <div className="workspace-grid">
             <section className="workspace-terminal">
               <div className="workspace-title"><h2>SSH 终端</h2><span>只读预览</span></div>
-              <pre>{['root@autodl-container:~# pwd','/root','root@autodl-container:~# nvidia-smi','No running GPU process. Instance is stopped.','root@autodl-container:~# bash /root/start-aitoolkitui.sh','waiting for boot confirmation ...'].join('\n')}</pre>
+              <pre>{['root@lingqu-container:~# pwd','/root','root@lingqu-container:~# nvidia-smi','No running GPU process. Instance is stopped.','root@lingqu-container:~# bash /root/start-aitoolkitui.sh','waiting for boot confirmation ...'].join('\n')}</pre>
               <div><input value="bash /root/start-aitoolkitui.sh" readOnly /><button>发送</button></div>
             </section>
             <section className="workspace-files">
@@ -2025,7 +2025,7 @@ function ArtInstanceDetailPage() {
             {metrics.map((item) => <article key={item[0]}><span>{item[0]}</span><strong>{item[1]}</strong><p>{item[2]}</p></article>)}
           </section>
           <section className="instance-service-card">
-            <div className="instance-section-title"><h2>访问服务</h2><span>开机后自动生成访问地址，端口与 AutoDL 应用服务保持一致</span></div>
+            <div className="instance-section-title"><h2>访问服务</h2><span>开机后自动生成访问地址，端口与 平台应用服务保持一致</span></div>
             <div className="instance-service-table">
               <div className="head"><span>服务名称</span><span>端口</span><span>类型</span><span>状态</span><span>操作</span></div>
               {services.map((row) => (
@@ -2039,8 +2039,8 @@ function ArtInstanceDetailPage() {
             <article>
               <h2>存储挂载</h2>
               <p><span>系统盘</span><strong>/root · 30GB · 已用 8.2GB</strong></p>
-              <p><span>数据盘</span><strong>/root/autodl-tmp · 50GB · 随实例释放</strong></p>
-              <p><span>公共数据</span><strong>/root/autodl-pub · 只读挂载</strong></p>
+              <p><span>数据盘</span><strong>/root/lingqu-tmp · 50GB · 随实例释放</strong></p>
+              <p><span>公共数据</span><strong>/root/lingqu-pub · 只读挂载</strong></p>
             </article>
             <article>
               <h2>网络与安全</h2>
@@ -2497,7 +2497,7 @@ function ApiDeployPage() {
           {params.map((row) => <div className="api-param-row" key={row[0]}><span>{row[0]}</span><span>{row[1]}</span><span>{row[2]}</span></div>)}
         </div>
       </section>
-      <section className="api-footer-note"><h2>配合弹性接口接入</h2><p>后续接入 AutoDL 提供的弹性接口后，这里将直接串联部署创建、状态查询、扩缩容和费用统计。</p></section>
+      <section className="api-footer-note"><h2>配合弹性接口接入</h2><p>后续接入 合作商弹性接口后，这里将直接串联部署创建、状态查询、扩缩容和费用统计。</p></section>
     </main>
   );
 }
@@ -2823,7 +2823,7 @@ function PublicDataDetailPage() {
   ];
   const examples = [
     ['查看路径', `ls ${dataRow[1]}`],
-    ['软链到工作目录', `ln -s ${dataRow[1]} /root/autodl-tmp/argoverse2`],
+    ['软链到工作目录', `ln -s ${dataRow[1]} /root/lingqu-tmp/argoverse2`],
     ['Python读取', `python train.py --data ${dataRow[1]}/sensor/train`],
   ];
   return (
@@ -2842,7 +2842,7 @@ function PublicDataDetailPage() {
           <div>
             <span className="compute-state">只读挂载</span>
             <h2>{dataRow[1]}</h2>
-            <p>公开数据会自动挂载到同地区实例的 `/root/autodl-pub` 目录。数据为只读模式，不占用个人文件存储容量，适合训练、评测和快速复现实验。</p>
+            <p>公开数据会自动挂载到同地区实例的 `/root/lingqu-pub` 目录。数据为只读模式，不占用个人文件存储容量，适合训练、评测和快速复现实验。</p>
             <div><button onClick={() => setModal('copy')}>复制实例路径</button><button onClick={() => setModal('mount')}>查看使用方式</button><button>收藏数据集</button></div>
           </div>
           <aside><span>数据大小</span><strong>{dataRow[2]}</strong><small>平台维护，用户只读</small></aside>
@@ -2889,14 +2889,14 @@ function PublicDataModal({ type, onClose }: { type: 'mount' | 'copy'; onClose: (
         <header><h2>{isCopy ? '复制公开数据路径' : '公开数据使用说明'}</h2><button onClick={onClose}>×</button></header>
         {isCopy ? (
           <div className="compute-action-form">
-            <label><span>实例路径</span><input value="/root/autodl-pub/argoverse2.0-sensor" readOnly /></label>
-            <label><span>软链命令</span><input value="ln -s /root/autodl-pub/argoverse2.0-sensor /root/autodl-tmp/argoverse2" readOnly /></label>
-            <p>公开数据为只读目录，训练输出请写入 `/root/autodl-tmp` 或文件存储。</p>
+            <label><span>实例路径</span><input value="/root/lingqu-pub/argoverse2.0-sensor" readOnly /></label>
+            <label><span>软链命令</span><input value="ln -s /root/lingqu-pub/argoverse2.0-sensor /root/lingqu-tmp/argoverse2" readOnly /></label>
+            <p>公开数据为只读目录，训练输出请写入 `/root/lingqu-tmp` 或文件存储。</p>
           </div>
         ) : (
           <div className="public-help-body">
             <article><b>1</b><div><strong>创建同区实例</strong><p>公开数据会挂载到支持该数据集的实例地区。</p></div></article>
-            <article><b>2</b><div><strong>进入实例终端</strong><p>通过 SSH 或 JupyterLab 查看 `/root/autodl-pub`。</p></div></article>
+            <article><b>2</b><div><strong>进入实例终端</strong><p>通过 SSH 或 JupyterLab 查看 `/root/lingqu-pub`。</p></div></article>
             <article><b>3</b><div><strong>读取数据训练</strong><p>直接使用路径读取，输出文件写入个人数据盘。</p></div></article>
           </div>
         )}
@@ -2914,7 +2914,7 @@ function FileStorePage() {
       <main className="console-main file-main">
         <div className="console-title file-title">
           <h1>文件存储</h1>
-          <span>文件存储在实例中的挂载目录为：/root/autodl-fs。连续3个月未登录或欠费50元以上，平台保留删除数据的权利，具体规则请参考<a>文档</a></span>
+          <span>文件存储在实例中的挂载目录为：/root/lingqu-fs。连续3个月未登录或欠费50元以上，平台保留删除数据的权利，具体规则请参考<a>文档</a></span>
         </div>
         <div className="region-tabs">{regions.map((item, index) => <button className={index === 0 ? 'selected' : ''} key={item}>{item}</button>)}</div>
         <section className="image-usage file-usage">
@@ -3018,7 +3018,7 @@ function ComputeImageDetailPage() {
           <div>
             <span className="compute-state">就绪</span>
             <h2>Miniconda / Python 3.10 / CUDA 11.8</h2>
-            <p>该镜像由 AutoDL 实例保存而来，包含系统环境、已安装依赖和工作目录配置。可用于创建新实例、弹性部署基础镜像或共享给团队成员。</p>
+            <p>该镜像由 平台实例保存而来，包含系统环境、已安装依赖和工作目录配置。可用于创建新实例、弹性部署基础镜像或共享给团队成员。</p>
             <div><button onClick={() => setModal('create')}>用镜像创建实例</button><button>复制镜像UUID</button><button>同步缓存</button></div>
           </div>
           <aside><span>今日存储费用</span><strong>￥5.81</strong><small>已用容量 611.25GB</small></aside>
@@ -3573,7 +3573,7 @@ function DeployMoreMenu() {
 function ComputeInstanceWorkspacePage({ data }: { data?: ComputePayload }) {
   const instance = data?.instances?.[0];
   const files = [
-    ['folder', 'autodl-tmp', '目录', '2026-05-20 15:41'],
+    ['folder', 'lingqu-tmp', '目录', '2026-05-20 15:41'],
     ['folder', 'ComfyUI', '目录', '2026-05-20 15:42'],
     ['folder', 'datasets', '目录', '2026-05-20 15:48'],
     ['file', 'start.sh', '1.8 KB', '2026-05-20 15:40'],
@@ -3589,7 +3589,7 @@ function ComputeInstanceWorkspacePage({ data }: { data?: ComputePayload }) {
   const tasks = [
     ['PID 1217', 'python app.py --listen 0.0.0.0 --port 6006', '00:38:12', '2.1GB'],
     ['PID 1241', 'jupyter-lab --allow-root --port 8888', '00:38:02', '742MB'],
-    ['PID 1356', 'tensorboard --logdir /root/autodl-tmp/logs', '00:12:44', '318MB'],
+    ['PID 1356', 'tensorboard --logdir /root/lingqu-tmp/logs', '00:12:44', '318MB'],
   ];
   return (
     <div className="console-layout">
@@ -3606,14 +3606,14 @@ function ComputeInstanceWorkspacePage({ data }: { data?: ComputePayload }) {
         <section className="workspace-status compute-workspace-status">
           <article><span>实例状态</span><strong>运行中</strong><p>GPU计费中 · 健康状态正常</p></article>
           <article><span>当前镜像</span><strong>PyTorch 2.8.0</strong><p>Python 3.11 · CUDA 13.0</p></article>
-          <article><span>数据目录</span><strong>/root/autodl-tmp</strong><p>已用 38.4GB / 50GB</p></article>
+          <article><span>数据目录</span><strong>/root/lingqu-tmp</strong><p>已用 38.4GB / 50GB</p></article>
           <article><span>公网服务</span><strong>4 个端口</strong><p>8888 / 22 / 6006 / 6008</p></article>
         </section>
         <div className="compute-workspace-grid">
           <section className="workspace-terminal compute-workspace-terminal">
             <div className="workspace-title"><h2>SSH 终端</h2><span>root@instance-941327a885</span></div>
-            <pre>{['root@autodl-container:~# nvidia-smi','RTX 5090  23%   18234MiB / 32768MiB','root@autodl-container:~# pwd','/root','root@autodl-container:~# cd /root/autodl-tmp','root@autodl-container:~/autodl-tmp# bash start.sh --port 6006','service already running on 0.0.0.0:6006'].join('\n')}</pre>
-            <div><input value="tail -f /root/autodl-tmp/run.log" readOnly /><button>发送</button></div>
+            <pre>{['root@lingqu-container:~# nvidia-smi','RTX 5090  23%   18234MiB / 32768MiB','root@lingqu-container:~# pwd','/root','root@lingqu-container:~# cd /root/lingqu-tmp','root@lingqu-container:~/lingqu-tmp# bash start.sh --port 6006','service already running on 0.0.0.0:6006'].join('\n')}</pre>
+            <div><input value="tail -f /root/lingqu-tmp/run.log" readOnly /><button>发送</button></div>
           </section>
           <section className="workspace-files compute-workspace-files">
             <div className="workspace-title"><h2>文件浏览器</h2><span>/root</span></div>
@@ -3638,7 +3638,7 @@ function ComputeInstanceWorkspacePage({ data }: { data?: ComputePayload }) {
           </section>
           <section className="workspace-logs compute-workspace-logs">
             <div className="workspace-title"><h2>实时日志</h2><span>run.log</span></div>
-            <pre>{['[16:03:22] proxy /compute/proxy/941327/6006 ready','[16:03:25] model cache loaded from /root/autodl-tmp/models','[16:03:31] web server listening on 0.0.0.0:6006','[16:04:02] request GET /health 200','[16:04:18] gpu memory allocated 18.2GB'].join('\n')}</pre>
+            <pre>{['[16:03:22] proxy /compute/proxy/941327/6006 ready','[16:03:25] model cache loaded from /root/lingqu-tmp/models','[16:03:31] web server listening on 0.0.0.0:6006','[16:04:02] request GET /health 200','[16:04:18] gpu memory allocated 18.2GB'].join('\n')}</pre>
             <div className="log-actions"><button>清空</button><button>下载日志</button><button>自动滚动</button></div>
           </section>
         </div>
@@ -3661,17 +3661,17 @@ function ComputeInstanceDetailPage({ data }: { data?: ComputePayload }) {
     ['GPU利用率', '23%', '最近5分钟平均', '12,18,20,24,22,26,23,21'],
     ['显存占用', '18.2GB', 'RTX 5090 / 32GB', '30,42,48,55,53,57,56,54'],
     ['CPU使用率', '16%', '22核', '10,12,18,16,20,17,16,14'],
-    ['磁盘IO', '42MB/s', '/root/autodl-tmp', '8,14,20,24,18,22,16,12'],
+    ['磁盘IO', '42MB/s', '/root/lingqu-tmp', '8,14,20,24,18,22,16,12'],
   ];
   const disks = [
     ['系统盘', '/root', instance?.system_disk_usage ?? '22.1GB / 30GB', '随实例释放'],
-    ['数据盘', '/root/autodl-tmp', instance?.data_disk_usage ?? '38.4GB / 50GB', '关机保留，释放删除'],
-    ['文件存储', '/root/autodl-fs', '231MB / 200GB', '跨实例挂载'],
-    ['公开数据', '/root/autodl-pub', '只读挂载', '平台维护'],
+    ['数据盘', '/root/lingqu-tmp', instance?.data_disk_usage ?? '38.4GB / 50GB', '关机保留，释放删除'],
+    ['文件存储', '/root/lingqu-fs', '231MB / 200GB', '跨实例挂载'],
+    ['公开数据', '/root/lingqu-pub', '只读挂载', '平台维护'],
   ];
   const events = [
     ['2026-05-20 15:41:02', '实例开机', '用户操作', '按量计费开始，服务端口开始代理', 'done'],
-    ['2026-05-20 15:40:51', '数据盘挂载', '调度系统', '/root/autodl-tmp 挂载完成', 'done'],
+    ['2026-05-20 15:40:51', '数据盘挂载', '调度系统', '/root/lingqu-tmp 挂载完成', 'done'],
     ['2026-05-20 15:40:32', '镜像加载', '调度系统', 'PyTorch 2.8.0 / CUDA 13.0 基础镜像加载完成', 'done'],
     ['2026-05-20 15:39:58', '余额检查', '计费系统', '账户余额满足开机条件', 'done'],
   ];
@@ -3733,7 +3733,7 @@ function ComputeInstanceDetailPage({ data }: { data?: ComputePayload }) {
           </section>
           <section className="compute-card">
             <div className="compute-card-title"><h2>启动命令</h2><button>编辑</button></div>
-            <pre>{`source /root/miniconda3/bin/activate\ncd /root/autodl-tmp\nbash start.sh --port 6006`}</pre>
+            <pre>{`source /root/miniconda3/bin/activate\ncd /root/lingqu-tmp\nbash start.sh --port 6006`}</pre>
           </section>
         </div>
         <section className="compute-card">
