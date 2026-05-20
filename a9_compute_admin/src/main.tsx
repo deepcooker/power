@@ -76,6 +76,7 @@ function App() {
   const isFileStorePage = currentPath === '/compute/file-store';
   const isFastFileStorePage = currentPath === '/compute/fast-file-store';
   const isNetdiskPage = currentPath === '/compute/netdisk';
+  const isImageDetailPage = currentPath === '/compute/images/detail';
   const isImagesPage = currentPath === '/compute/images';
   const isPublicDataPage = currentPath === '/compute/public-data';
   const isBillingPage = currentPath === '/compute/billing';
@@ -174,6 +175,10 @@ function App() {
 
   if (isPublicDataPage) {
     return <Shell data={data}><PublicDataPage /></Shell>;
+  }
+
+  if (isImageDetailPage) {
+    return <Shell data={data}><ComputeImageDetailPage /></Shell>;
   }
 
   if (isImagesPage) {
@@ -2557,6 +2562,7 @@ function NetdiskPage() {
 }
 
 function ImagesPage() {
+  const [modal, setModal] = useState<'edit' | 'share' | 'delete' | 'create' | ''>('');
   return (
     <div className="console-layout">
       <ConsoleSideBar current="images" />
@@ -2564,6 +2570,13 @@ function ImagesPage() {
         <div className="console-title image-title">
           <h1>我的镜像</h1>
           <span>连续3个月未登录或欠费50元以上，平台保留删除数据的权利，具体规则请参考<a>文档</a></span>
+        </div>
+        <div className="console-toolbar image-toolbar">
+          <button className="blue" onClick={() => setModal('create')}>保存实例为镜像</button>
+          <button>导入镜像</button>
+          <button className="refresh">C</button>
+          <div className="toolbar-spacer" />
+          <div className="search-like">搜索镜像名称/UUID <span>⌕</span></div>
         </div>
         <section className="image-usage">
           <div className="image-usage-head"><span>存储容量大小:<b>611.25GB</b>（今天容量使用峰值611.25GB，预计扣费5.81元）</span><a>查看计费规则</a></div>
@@ -2574,13 +2587,126 @@ function ImagesPage() {
           <div className="image-head"><span>镜像UUID</span><span>镜像名称</span><span>大小</span><span>状态</span><span>共享信息</span><span>来源</span><span>缓存地区 ⓘ</span><span>原基础镜像信息</span><span>创建时间</span><span>操作</span></div>
           {imageRows.map((row) => (
             <div className="image-row" key={row.uuid}>
-              <span>{row.uuid}</span><span>{row.name}</span><span>{row.size}</span><span><i className="dot green" />{row.status}</span><span>{row.share}</span><span>{row.source}</span><span>{row.cache}</span><span>{row.base}</span><span>{row.created}</span>
-              <span className="image-actions"><a>编辑</a><a>共享</a><a className="danger">删除</a></span>
+              <span><a href="/compute/images/detail">{row.uuid}</a></span><span>{row.name}</span><span>{row.size}</span><span><i className="dot green" />{row.status}</span><span>{row.share}</span><span>{row.source}</span><span>{row.cache}</span><span>{row.base}</span><span>{row.created}</span>
+              <span className="image-actions"><a onClick={() => setModal('edit')}>编辑</a><a onClick={() => setModal('share')}>共享</a><a className="danger" onClick={() => setModal('delete')}>删除</a></span>
             </div>
           ))}
         </div>
         <div className="console-pager">共 38 条 <span>‹</span><b>1</b><b className="dark">2</b><b className="dark">3</b><b className="dark">4</b><span>›</span><button>10条/页 ⌄</button> 前往 <input value="1" readOnly /> 页</div>
       </main>
+      {modal && <ComputeImageActionModal type={modal} onClose={() => setModal('')} />}
+    </div>
+  );
+}
+
+function ComputeImageDetailPage() {
+  const [modal, setModal] = useState<'edit' | 'share' | 'delete' | 'create' | ''>('');
+  const image = imageRows[0];
+  const caches = [
+    ['重庆A区', '已缓存', '2026-04-15 13:41:20', '可直接创建实例'],
+    ['北京B区', '同步中', '2026-05-20 16:22:10', '预计 18 分钟完成'],
+    ['西北B区', '未缓存', '-', '首次创建会自动同步'],
+  ];
+  const tasks = [
+    ['2026-04-15 13:30:50', '从实例保存镜像', 'ins-941327a885', '成功'],
+    ['2026-04-15 13:36:12', '镜像安全扫描', '系统任务', '通过'],
+    ['2026-04-15 13:41:20', '缓存到重庆A区', '调度系统', '成功'],
+  ];
+  return (
+    <div className="console-layout">
+      <ConsoleSideBar current="images" />
+      <main className="compute-image-detail">
+        <div className="compute-detail-head">
+          <div>
+            <div className="rent-crumb">我的镜像 / 镜像详情</div>
+            <h1>{image.name}</h1>
+            <p>{image.uuid} · {image.size} · {image.status} · {image.share}</p>
+          </div>
+          <div><button onClick={() => setModal('edit')}>编辑</button><button onClick={() => setModal('share')}>共享</button><button onClick={() => setModal('create')}>创建实例</button><button onClick={() => setModal('delete')}>删除</button></div>
+        </div>
+        <section className="compute-image-hero">
+          <div className="image-detail-icon">镜</div>
+          <div>
+            <span className="compute-state">就绪</span>
+            <h2>Miniconda / Python 3.10 / CUDA 11.8</h2>
+            <p>该镜像由 AutoDL 实例保存而来，包含系统环境、已安装依赖和工作目录配置。可用于创建新实例、弹性部署基础镜像或共享给团队成员。</p>
+            <div><button onClick={() => setModal('create')}>用镜像创建实例</button><button>复制镜像UUID</button><button>同步缓存</button></div>
+          </div>
+          <aside><span>今日存储费用</span><strong>￥5.81</strong><small>已用容量 611.25GB</small></aside>
+        </section>
+        <div className="compute-detail-grid">
+          <section className="compute-card">
+            <div className="compute-card-title"><h2>基础信息</h2><a onClick={() => setModal('edit')}>编辑</a></div>
+            <div className="image-info-list">
+              {[
+                ['镜像UUID', image.uuid],
+                ['镜像名称', image.name],
+                ['镜像大小', image.size],
+                ['来源', image.source],
+                ['缓存地区', image.cache],
+                ['创建时间', image.created],
+              ].map((row) => <p key={row[0]}><span>{row[0]}</span><strong>{row[1]}</strong></p>)}
+            </div>
+          </section>
+          <section className="compute-card">
+            <div className="compute-card-title"><h2>原基础镜像</h2><span>保存镜像时的基础环境</span></div>
+            <pre>{image.base}</pre>
+          </section>
+        </div>
+        <section className="compute-card">
+          <div className="compute-card-title"><h2>地区缓存</h2><span>缓存完成后同区创建实例更快</span></div>
+          <div className="image-cache-table">
+            <div className="head"><span>地区</span><span>状态</span><span>更新时间</span><span>说明</span></div>
+            {caches.map((row) => <div className="row" key={row[0]}>{row.map((cell, index) => <span className={index === 1 ? (cell === '已缓存' ? 'ok' : cell === '同步中' ? 'pending' : '') : ''} key={cell}>{cell}</span>)}</div>)}
+          </div>
+        </section>
+        <section className="compute-card">
+          <div className="compute-card-title"><h2>任务记录</h2><span>保存、扫描、缓存和共享记录</span></div>
+          <div className="image-task-table">
+            <div className="head"><span>时间</span><span>任务</span><span>来源</span><span>结果</span></div>
+            {tasks.map((row) => <div className="row" key={row[0]}>{row.map((cell) => <span key={cell}>{cell}</span>)}</div>)}
+          </div>
+        </section>
+      </main>
+      {modal && <ComputeImageActionModal type={modal} onClose={() => setModal('')} />}
+    </div>
+  );
+}
+
+function ComputeImageActionModal({ type, onClose }: { type: 'edit' | 'share' | 'delete' | 'create'; onClose: () => void }) {
+  const isDelete = type === 'delete';
+  const isShare = type === 'share';
+  const isCreate = type === 'create';
+  return (
+    <div className="modal-mask">
+      <section className={`compute-action-modal image-action-modal ${isDelete ? 'danger' : ''}`}>
+        <header><h2>{isDelete ? '删除镜像' : isShare ? '共享镜像' : isCreate ? '用镜像创建实例' : '编辑镜像'}</h2><button onClick={onClose}>×</button></header>
+        {isDelete ? (
+          <div className="compute-action-body"><span>!</span><p>删除镜像后无法通过该镜像创建实例，已缓存地区的镜像副本也会被清理。</p><label><input type="checkbox" checked readOnly /> 我已确认镜像不再使用</label></div>
+        ) : isShare ? (
+          <div className="compute-action-form image-action-form">
+            <label><span>共享范围</span><div><button className="active">私有</button><button>团队</button><button>公开</button></div></label>
+            <label><span>授权账号</span><input value="请输入用户ID或手机号" readOnly /></label>
+            <label><span>权限</span><div><button className="active">只读使用</button><button>允许复制</button></div></label>
+            <p>共享后对方可以在“我的镜像”中看到该镜像，并用它创建实例。</p>
+          </div>
+        ) : isCreate ? (
+          <div className="compute-action-form image-action-form">
+            <label><span>地区</span><div><button className="active">重庆A区</button><button>北京B区</button><button>西北B区</button></div></label>
+            <label><span>GPU</span><div><button className="active">RTX 5090</button><button>RTX 4090D</button><button>vGPU-32GB</button></div></label>
+            <label><span>系统盘</span><input value="30GB" readOnly /></label>
+            <p>创建后会进入容器实例列表，开机后可访问 JupyterLab、SSH 和自定义服务。</p>
+          </div>
+        ) : (
+          <div className="compute-action-form image-action-form">
+            <label><span>镜像名称</span><input value="new0415" readOnly /></label>
+            <label><span>描述</span><input value="Python 3.10 / CUDA 11.8 训练环境" readOnly /></label>
+            <label><span>标签</span><div><button className="active">训练</button><button className="active">CUDA</button><button>WebUI</button></div></label>
+            <p>修改名称和描述不会影响镜像 UUID、大小和缓存副本。</p>
+          </div>
+        )}
+        <footer><button onClick={onClose}>取消</button><button className="primary" onClick={onClose}>{isDelete ? '确认删除' : isShare ? '保存共享' : isCreate ? '创建实例' : '保存'}</button></footer>
+      </section>
     </div>
   );
 }
