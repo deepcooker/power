@@ -84,6 +84,21 @@ function workflowRunToCard(run: WorkflowRunRecord) {
   return [run.title, run.statusText, run.durationText, run.costText, run.createdAt, workflowCoverClass[template?.cover ?? ''] ?? 'video'];
 }
 const workflowRuns = workflowRunRecords.map(workflowRunToCard);
+function useWorkflowTemplates() {
+  const [templates, setTemplates] = useState<WorkflowTemplate[]>(workflowTemplates);
+  useEffect(() => {
+    let alive = true;
+    workflowApi.templates().then(({ items }) => {
+      if (alive && items.length > 0) {
+        setTemplates(items);
+      }
+    }).catch(() => undefined);
+    return () => {
+      alive = false;
+    };
+  }, []);
+  return templates;
+}
 const imageRows = [
   { uuid: 'image-e55db9ae41', name: 'new0415', size: '20.78GB', status: '就绪', share: '私有镜像', source: '灵渠', cache: '重庆区', base: 'Miniconda  conda3\nPython  3.10(ubuntu22.04)\nCUDA  11.8', created: '2026-04-15 13:30:50' },
   { uuid: 'image-ef24180470', name: 'policy2026', size: '14.97GB', status: '就绪', share: '私有镜像', source: '灵渠', cache: '重庆区', base: 'Miniconda  conda3\nPython  3.10(ubuntu22.04)\nCUDA  11.8', created: '2026-01-17 01:11:09' },
@@ -498,6 +513,8 @@ function HomePage() {
 }
 
 function WorkflowsPage() {
+  const templates = useWorkflowTemplates();
+  const cards = templates.map(workflowTemplateToCard);
   const cats = ['推荐', '文生视频', '图生视频', '商品营销', '数字人', '风格化', 'ComfyUI'];
   return (
     <main className="workflow-page">
@@ -533,11 +550,11 @@ function WorkflowsPage() {
       <section className="workflow-section-head"><h2>热门工作流</h2><div>{cats.map((cat, index) => <button className={index === 0 ? 'active' : ''} key={cat}>{cat}</button>)}<a href="/compute/workflows/mine">我的工作流</a></div></section>
       <div className="workflow-layout">
         <section className="workflow-grid">
-          {workflowCards.map((card) => <WorkflowCard card={card} key={card[0]} />)}
+          {cards.map((card) => <WorkflowCard card={card} key={card[0]} />)}
         </section>
         <aside className="workflow-rank">
           <h2>创作榜</h2>
-          {workflowCards.slice(0, 5).map((card, index) => <a href="/compute/workflows/ltx-video" key={card[0]}><b>{index + 1}</b><span>{card[0]}</span><em>{card[3]}</em></a>)}
+          {cards.slice(0, 5).map((card, index) => <a href="/compute/workflows/ltx-video" key={card[0]}><b>{index + 1}</b><span>{card[0]}</span><em>{card[3]}</em></a>)}
         </aside>
       </div>
       <section className="workflow-showcase">
@@ -857,18 +874,7 @@ function WorkflowRunDetailModal({ run, onClose }: { run: string[]; onClose: () =
 
 function MyWorkflowsPage() {
   const [modal, setModal] = useState<'create' | 'version' | 'share' | ''>('');
-  const [templates, setTemplates] = useState<WorkflowTemplate[]>(workflowTemplates);
-  useEffect(() => {
-    let alive = true;
-    workflowApi.templates().then(({ items }) => {
-      if (alive && items.length > 0) {
-        setTemplates(items);
-      }
-    }).catch(() => undefined);
-    return () => {
-      alive = false;
-    };
-  }, []);
+  const templates = useWorkflowTemplates();
   const mine = templates.map(workflowTemplateToMineRow);
   const templateCards = templates.map(workflowTemplateToCard);
   const audits = [
