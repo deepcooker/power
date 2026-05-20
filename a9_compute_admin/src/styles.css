@@ -9697,7 +9697,7 @@ button { cursor: pointer; }
   align-items: stretch;
   padding: 32px;
   border-radius: 10px;
-  background: #0f172a;
+  background: linear-gradient(90deg, rgba(15,23,42,0.94), rgba(15,23,42,0.72)), url('./assets/workflows/workflow-hero.png') center/cover;
   color: #fff;
 }
 .workflow-hero span,
@@ -9744,6 +9744,15 @@ button { cursor: pointer; }
   overflow: hidden;
   border-radius: 10px;
   background: linear-gradient(135deg, #283e78, #0f172a 54%, #7c3aed);
+}
+.workflow-hero-stage article.big {
+  background: linear-gradient(180deg, rgba(15,23,42,0.18), rgba(15,23,42,0.82)), url('./assets/workflows/workflow-ltx-video.png') center/cover;
+}
+.workflow-hero-stage article:nth-child(2) {
+  background: linear-gradient(180deg, rgba(15,23,42,0.14), rgba(15,23,42,0.78)), url('./assets/workflows/workflow-wan-video.png') center/cover;
+}
+.workflow-hero-stage article:nth-child(3) {
+  background: linear-gradient(180deg, rgba(15,23,42,0.14), rgba(15,23,42,0.78)), url('./assets/workflows/workflow-ecommerce-batch.png') center/cover;
 }
 .workflow-hero-stage article.big {
   grid-row: span 2;
@@ -9868,13 +9877,13 @@ button { cursor: pointer; }
   position: absolute;
   inset: 0;
   z-index: -1;
-  background: radial-gradient(circle at 18% 18%, rgba(255,255,255,0.22), transparent 28%), linear-gradient(135deg, #0f172a, #2454d6 54%, #10b981);
+  background: linear-gradient(180deg, rgba(15,23,42,0.12), rgba(15,23,42,0.82)), url('./assets/workflows/workflow-ltx-video.png') center/cover;
 }
 .workflow-featured-grid article.product::before {
-  background: radial-gradient(circle at 76% 22%, rgba(255,255,255,0.26), transparent 28%), linear-gradient(135deg, #064e3b, #14b8a6 52%, #f59e0b);
+  background: linear-gradient(180deg, rgba(15,23,42,0.12), rgba(15,23,42,0.8)), url('./assets/workflows/workflow-product-video.png') center/cover;
 }
 .workflow-featured-grid article.avatar::before {
-  background: radial-gradient(circle at 70% 20%, rgba(255,255,255,0.22), transparent 30%), linear-gradient(135deg, #312e81, #0891b2 56%, #f43f5e);
+  background: linear-gradient(180deg, rgba(15,23,42,0.12), rgba(15,23,42,0.8)), url('./assets/workflows/workflow-avatar.png') center/cover;
 }
 .workflow-featured-grid span,
 .workflow-showcase span {
@@ -9924,12 +9933,12 @@ button { cursor: pointer; }
   align-content: space-between;
   color: #fff;
 }
-.workflow-cover.video { background: linear-gradient(135deg, #243b74, #7c3aed); }
-.workflow-cover.cinema { background: linear-gradient(135deg, #141e30, #d76d77); }
-.workflow-cover.product { background: linear-gradient(135deg, #0f766e, #f59e0b); }
-.workflow-cover.avatar { background: linear-gradient(135deg, #4338ca, #06b6d4); }
-.workflow-cover.cyber { background: linear-gradient(135deg, #111827, #ec4899); }
-.workflow-cover.comic { background: linear-gradient(135deg, #2563eb, #22c55e); }
+.workflow-cover.video { background: linear-gradient(180deg, rgba(15,23,42,0.1), rgba(15,23,42,0.78)), url('./assets/workflows/workflow-ltx-video.png') center/cover; }
+.workflow-cover.cinema { background: linear-gradient(180deg, rgba(15,23,42,0.1), rgba(15,23,42,0.78)), url('./assets/workflows/workflow-wan-video.png') center/cover; }
+.workflow-cover.product { background: linear-gradient(180deg, rgba(15,23,42,0.08), rgba(15,23,42,0.76)), url('./assets/workflows/workflow-product-video.png') center/cover; }
+.workflow-cover.avatar { background: linear-gradient(180deg, rgba(15,23,42,0.1), rgba(15,23,42,0.78)), url('./assets/workflows/workflow-avatar.png') center/cover; }
+.workflow-cover.cyber { background: linear-gradient(180deg, rgba(15,23,42,0.1), rgba(15,23,42,0.78)), url('./assets/workflows/workflow-cyber-style.png') center/cover; }
+.workflow-cover.comic { background: linear-gradient(180deg, rgba(15,23,42,0.1), rgba(15,23,42,0.78)), url('./assets/workflows/workflow-comic-storyboard.png') center/cover; }
 .workflow-cover strong {
   font-size: 24px;
   line-height: 1.15;
@@ -10023,11 +10032,12 @@ button { cursor: pointer; }
 .workflow-showcase article:nth-child(5) {
   min-height: 260px;
 }
-.workflow-showcase article.product { background: linear-gradient(135deg, #0f766e, #f59e0b); }
-.workflow-showcase article.cinema { background: linear-gradient(135deg, #1f2937, #be123c); }
-.workflow-showcase article.cyber { background: linear-gradient(135deg, #111827, #db2777); }
-.workflow-showcase article.comic { background: linear-gradient(135deg, #2563eb, #22c55e); }
-.workflow-showcase article.avatar { background: linear-gradient(135deg, #4338ca, #06b6d4); }
+.workflow-showcase article.video { background: linear-gradient(180deg, rgba(15,23,42,0.08), rgba(15,23,42,0.78)), url('./assets/workflows/workflow-character-ip.png') center/cover; }
+.workflow-showcase article.product { background: linear-gradient(180deg, rgba(15,23,42,0.08), rgba(15,23,42,0.78)), url('./assets/workflows/workflow-ecommerce-batch.png') center/cover; }
+.workflow-showcase article.cinema { background: linear-gradient(180deg, rgba(15,23,42,0.08), rgba(15,23,42,0.78)), url('./assets/workflows/workflow-wan-video.png') center/cover; }
+.workflow-showcase article.cyber { background: linear-gradient(180deg, rgba(15,23,42,0.08), rgba(15,23,42,0.78)), url('./assets/workflows/workflow-cyber-style.png') center/cover; }
+.workflow-showcase article.comic { background: linear-gradient(180deg, rgba(15,23,42,0.08), rgba(15,23,42,0.78)), url('./assets/workflows/workflow-comic-storyboard.png') center/cover; }
+.workflow-showcase article.avatar { background: linear-gradient(180deg, rgba(15,23,42,0.08), rgba(15,23,42,0.78)), url('./assets/workflows/workflow-avatar.png') center/cover; }
 .workflow-showcase strong {
   font-size: 20px;
   line-height: 1.2;
@@ -10075,6 +10085,7 @@ button { cursor: pointer; }
   font-size: 34px;
   font-weight: 800;
   text-align: center;
+  background: linear-gradient(180deg, rgba(15,23,42,0.08), rgba(15,23,42,0.76)), url('./assets/workflows/workflow-detail-case.png') center/cover;
 }
 .workflow-detail-media div:last-child {
   display: grid;
@@ -10163,8 +10174,14 @@ button { cursor: pointer; }
   gap: 8px;
   padding: 18px;
   border-radius: 10px;
-  background: linear-gradient(135deg, #111827, #315cff 56%, #ec4899);
+  background: linear-gradient(180deg, rgba(15,23,42,0.08), rgba(15,23,42,0.78)), url('./assets/workflows/workflow-detail-case.png') center/cover;
   color: #fff;
+}
+.workflow-example-card:nth-child(2) {
+  background: linear-gradient(180deg, rgba(15,23,42,0.08), rgba(15,23,42,0.78)), url('./assets/workflows/workflow-product-video.png') center/cover;
+}
+.workflow-example-card:nth-child(3) {
+  background: linear-gradient(180deg, rgba(15,23,42,0.08), rgba(15,23,42,0.78)), url('./assets/workflows/workflow-cyber-style.png') center/cover;
 }
 .workflow-example-card.large {
   min-height: 290px;
@@ -10568,7 +10585,7 @@ button { cursor: pointer; }
   background: linear-gradient(135deg, #0f172a, #315cff 60%, #22c55e);
 }
 .workflow-result-stage.done {
-  background: linear-gradient(135deg, #111827, #7c3aed 52%, #f59e0b);
+  background: linear-gradient(180deg, rgba(15,23,42,0.08), rgba(15,23,42,0.78)), url('./assets/workflows/workflow-run-result.png') center/cover;
 }
 .workflow-result-stage span {
   color: #dbeafe;
@@ -10917,16 +10934,16 @@ button { cursor: pointer; }
   border-radius: 8px;
   color: #fff;
   text-align: center;
-  background: linear-gradient(135deg, #111827, #315cff, #7c3aed);
+  background: linear-gradient(180deg, rgba(15,23,42,0.08), rgba(15,23,42,0.78)), url('./assets/workflows/workflow-run-result.png') center/cover;
 }
 .run-detail-preview.product {
-  background: linear-gradient(135deg, #0f766e, #f59e0b);
+  background: linear-gradient(180deg, rgba(15,23,42,0.08), rgba(15,23,42,0.78)), url('./assets/workflows/workflow-product-video.png') center/cover;
 }
 .run-detail-preview.cinema {
-  background: linear-gradient(135deg, #111827, #d76d77);
+  background: linear-gradient(180deg, rgba(15,23,42,0.08), rgba(15,23,42,0.78)), url('./assets/workflows/workflow-wan-video.png') center/cover;
 }
 .run-detail-preview.cyber {
-  background: linear-gradient(135deg, #111827, #ec4899);
+  background: linear-gradient(180deg, rgba(15,23,42,0.08), rgba(15,23,42,0.78)), url('./assets/workflows/workflow-cyber-style.png') center/cover;
 }
 .run-detail-preview.failed {
   background: linear-gradient(135deg, #1f2937, #6b7280);
@@ -11330,7 +11347,7 @@ button { cursor: pointer; }
   gap: 8px;
   padding: 18px;
   border-radius: 8px;
-  background: linear-gradient(135deg, #0f172a, #2454d6 58%, #13c28f);
+  background: linear-gradient(180deg, rgba(15,23,42,0.08), rgba(15,23,42,0.78)), url('./assets/workflows/workflow-ltx-video.png') center/cover;
   color: #fff;
 }
 .workflow-modal-preview span {
@@ -11350,7 +11367,7 @@ button { cursor: pointer; }
   display: grid;
   place-items: center;
   border-radius: 8px;
-  background: linear-gradient(135deg, #111827, #7c3aed, #f59e0b);
+  background: linear-gradient(180deg, rgba(15,23,42,0.08), rgba(15,23,42,0.78)), url('./assets/workflows/workflow-run-result.png') center/cover;
   color: #fff;
   font-size: 24px;
   font-weight: 800;
