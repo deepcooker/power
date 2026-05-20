@@ -10036,8 +10036,63 @@ button { cursor: pointer; }
   color: #637083;
   line-height: 1.7;
 }
+.workflow-example-wall {
+  margin-top: 22px;
+}
+.workflow-example-wall > div:last-child {
+  display: grid;
+  grid-template-columns: 1.2fr 0.9fr 0.9fr;
+  gap: 16px;
+}
+.workflow-example-card {
+  min-height: 220px;
+  display: grid;
+  align-content: end;
+  gap: 8px;
+  padding: 18px;
+  border-radius: 10px;
+  background: linear-gradient(135deg, #111827, #315cff 56%, #ec4899);
+  color: #fff;
+}
+.workflow-example-card.large {
+  min-height: 290px;
+}
+.workflow-example-card span {
+  width: fit-content;
+  padding: 4px 9px;
+  border-radius: 12px;
+  background: rgba(255,255,255,0.18);
+}
+.workflow-example-card strong {
+  font-size: 24px;
+}
+.workflow-example-card p {
+  margin: 0;
+  color: #e5e7eb;
+}
 .workflow-node-preview {
   margin-top: 18px;
+}
+.workflow-detail-bottom {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 16px;
+  margin-top: 18px;
+}
+.workflow-detail-bottom article {
+  padding: 18px;
+  border: 1px solid #e0e5ef;
+  border-radius: 8px;
+  background: #fff;
+}
+.workflow-detail-bottom h2 {
+  margin: 0 0 10px;
+  font-size: 18px;
+}
+.workflow-detail-bottom p {
+  margin: 0;
+  color: #637083;
+  line-height: 1.7;
 }
 .workflow-nodes {
   min-height: 120px;
@@ -10186,6 +10241,12 @@ button { cursor: pointer; }
   color: #fff;
   text-align: center;
 }
+.workflow-result-stage.running {
+  background: linear-gradient(135deg, #0f172a, #315cff 60%, #22c55e);
+}
+.workflow-result-stage.done {
+  background: linear-gradient(135deg, #111827, #7c3aed 52%, #f59e0b);
+}
 .workflow-result-stage span {
   color: #dbeafe;
 }
@@ -10194,6 +10255,20 @@ button { cursor: pointer; }
 }
 .workflow-result-stage p {
   color: #cbd5e1;
+}
+.workflow-frame-strip {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 10px;
+  margin-top: 12px;
+}
+.workflow-frame-strip span {
+  height: 72px;
+  display: grid;
+  place-items: center;
+  border-radius: 6px;
+  background: #eef2ff;
+  color: #58627a;
 }
 .workflow-canvas-panel .workflow-nodes {
   margin-top: 16px;
@@ -10236,6 +10311,18 @@ button { cursor: pointer; }
   background: #315cff;
   color: #fff;
 }
+.workflow-run-actions {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 10px;
+  margin-bottom: 12px;
+}
+.workflow-run-actions button {
+  margin: 0;
+  border: 1px solid #d5d9e3;
+  background: #fff;
+  color: #555;
+}
 .workflow-run-config small {
   color: #7a8496;
   line-height: 1.6;
@@ -10263,4 +10350,98 @@ button { cursor: pointer; }
   display: flex;
   gap: 10px;
   padding: 0 14px 14px;
+}
+.workflow-publish-modal {
+  width: 620px;
+  overflow: hidden;
+  border-radius: 8px;
+  background: #fff;
+  box-shadow: 0 12px 30px rgba(0,0,0,0.22);
+}
+.workflow-publish-modal header {
+  height: 56px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 20px;
+  border-bottom: 1px solid #e0e5ef;
+}
+.workflow-publish-modal h2 {
+  margin: 0;
+  font-size: 18px;
+}
+.workflow-publish-modal header button {
+  border: 0;
+  background: transparent;
+  color: #999;
+  font-size: 22px;
+}
+.workflow-publish-body {
+  display: grid;
+  gap: 14px;
+  padding: 22px;
+}
+.publish-preview {
+  height: 160px;
+  display: grid;
+  place-items: center;
+  border-radius: 8px;
+  background: linear-gradient(135deg, #111827, #7c3aed, #f59e0b);
+  color: #fff;
+  font-size: 24px;
+  font-weight: 800;
+}
+.workflow-publish-body label {
+  display: grid;
+  grid-template-columns: 82px 1fr;
+  gap: 12px;
+  align-items: center;
+}
+.workflow-publish-body input {
+  height: 34px;
+  padding: 0 12px;
+  border: 1px solid #d5d9e3;
+  border-radius: 4px;
+}
+.workflow-publish-body label div {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+.workflow-publish-body label button {
+  height: 30px;
+  padding: 0 12px;
+  border: 1px solid #d5d9e3;
+  border-radius: 3px;
+  background: #fff;
+}
+.workflow-publish-body label button.active {
+  border-color: #315cff;
+  color: #315cff;
+}
+.workflow-publish-body p {
+  margin: 0;
+  color: #637083;
+}
+.workflow-publish-modal footer {
+  height: 58px;
+  display: flex;
+  justify-content: flex-end;
+  align-items: center;
+  gap: 12px;
+  padding: 0 20px;
+  border-top: 1px solid #e0e5ef;
+  background: #fbfcff;
+}
+.workflow-publish-modal footer button {
+  height: 32px;
+  min-width: 88px;
+  border: 1px solid #d5d9e3;
+  border-radius: 3px;
+  background: #fff;
+}
+.workflow-publish-modal footer .primary {
+  border-color: #315cff;
+  background: #315cff;
+  color: #fff;
 }
