@@ -4,6 +4,7 @@ from pathlib import Path
 
 import uvicorn
 from fastapi import FastAPI
+from pydantic import BaseModel
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import FileResponse, RedirectResponse
 from fastapi.staticfiles import StaticFiles
@@ -25,6 +26,89 @@ app.add_middleware(
 
 def ok(data):
     return {"err_code": 0, "data": data}
+
+
+WORKFLOW_TEMPLATES = [
+    {
+        "id": "ltx-video",
+        "title": "LTX2.3 图生视频",
+        "mode": "image_to_video",
+        "category": "图生视频",
+        "cover": "workflow-ltx-video",
+        "summary": "上传角色图，一键生成电影感运镜短片",
+        "priceText": "12算力币/次",
+        "runCount": "8.6k",
+        "tags": ["精选", "角色", "短视频"],
+    },
+    {
+        "id": "wan-video",
+        "title": "Wan2.2 文生视频",
+        "mode": "text_to_video",
+        "category": "文生视频",
+        "cover": "workflow-wan-video",
+        "summary": "输入剧情提示词，生成高质感商业视频镜头",
+        "priceText": "18算力币/次",
+        "runCount": "6.9k",
+        "tags": ["热门", "剧情", "商业"],
+    },
+    {
+        "id": "product-video",
+        "title": "商品图动态展示",
+        "mode": "image_to_video",
+        "category": "商品营销",
+        "cover": "workflow-product-video",
+        "summary": "电商主图转 5 秒卖点视频，适合批量投放",
+        "priceText": "9算力币/次",
+        "runCount": "5.1k",
+        "tags": ["商用", "电商", "批量"],
+    },
+]
+
+WORKFLOW_RUNS = [
+    {
+        "id": "WF-240518",
+        "templateId": "ltx-video",
+        "title": "LTX2.3 图生视频",
+        "status": "succeeded",
+        "statusText": "生成成功",
+        "mode": "image_to_video",
+        "durationText": "00:01:48",
+        "costText": "12算力币",
+        "createdAt": "2026-05-20 17:18",
+        "prompt": "电影感镜头，人物回头，柔和光线，浅景深，细节丰富",
+        "ratio": "9:16",
+        "quality": "1080P",
+        "seed": "238471",
+        "resultType": "video",
+    }
+]
+
+
+class WorkflowRunRequest(BaseModel):
+    templateId: str
+    mode: str
+    prompt: str
+    negativePrompt: str | None = None
+    ratio: str = "9:16"
+    quality: str = "1080P"
+    durationSeconds: int | None = 6
+    imageCount: int | None = 1
+    styleStrength: str | None = "medium"
+    seed: str | None = None
+
+
+def estimate_workflow_cost(payload: WorkflowRunRequest):
+    base = 5 if payload.mode == "text_to_image" else 18 if payload.mode == "text_to_video" else 12
+    quality_extra = 4 if payload.quality == "1080P" else 0
+    duration_extra = 6 if payload.durationSeconds == 8 else 0
+    image_count_extra = max((payload.imageCount or 1) - 1, 0) * 2 if payload.mode == "text_to_image" else 0
+    return {
+        "base": base,
+        "qualityExtra": quality_extra,
+        "durationExtra": duration_extra,
+        "total": base + quality_extra + duration_extra + image_count_extra,
+        "currency": "compute_coin",
+    }
 
 
 @app.get("/api/health")
@@ -244,6 +328,44 @@ async def autodl_console():
             ],
         }
     )
+
+
+@app.get("/api/workflows/templates")
+async def workflow_templates():
+    return ok({"items": WORKFLOW_TEMPLATES})
+
+
+@app.get("/api/workflows/runs")
+async def workflow_runs():
+    return ok({"items": WORKFLOW_RUNS})
+
+
+@app.post("/api/workflows/estimate")
+async def workflow_estimate(payload: WorkflowRunRequest):
+    return ok(estimate_workflow_cost(payload))
+
+
+@app.post("/api/workflows/runs")
+async def create_workflow_run(payload: WorkflowRunRequest):
+    estimate = estimate_workflow_cost(payload)
+    run = {
+        "id": f"WF-{int(datetime.now(timezone.utc).timestamp())}",
+        "templateId": payload.templateId,
+        "title": "文生图生成" if payload.mode == "text_to_image" else "文生视频生成" if payload.mode == "text_to_video" else "图生视频生成",
+        "status": "queued",
+        "statusText": "排队中",
+        "mode": payload.mode,
+        "durationText": "-",
+        "costText": f"{estimate['total']}算力币",
+        "createdAt": datetime.now(timezone.utc).strftime("%Y-%m-%d %H:%M"),
+        "prompt": payload.prompt,
+        "ratio": payload.ratio,
+        "quality": payload.quality,
+        "seed": payload.seed or "random",
+        "resultType": "image" if payload.mode == "text_to_image" else "video",
+    }
+    WORKFLOW_RUNS.insert(0, run)
+    return ok(run)
 
 
 if FRONTEND_DIST.exists():
