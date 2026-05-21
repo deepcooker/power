@@ -45,22 +45,63 @@ systemctl restart "${SERVICE_NAME}"
 sleep 1
 systemctl --no-pager --full status "${SERVICE_NAME}" | sed -n '1,35p'
 
-if ! grep -q "location \\^~ /ssh/" "${NGINX_CONF}"; then
-  tmp_conf="$(mktemp)"
-  awk -v insert_file="${APP_DIR}/deploy/nginx-location.conf" '
-    /^}[[:space:]]*$/ && inserted == 0 {
-      while ((getline line < insert_file) > 0) print line
-      close(insert_file)
-      inserted = 1
-    }
-    { print }
-  ' "${NGINX_CONF}" > "${tmp_conf}"
-  cp "${NGINX_CONF}" "${NGINX_CONF}.bak.$(date +%Y%m%d_%H%M%S)"
-  cat "${tmp_conf}" > "${NGINX_CONF}"
-  rm -f "${tmp_conf}"
-else
-  echo "nginx /ssh/ location already exists"
-fi
+python3 - "${NGINX_CONF}" <<'PY'
+from pathlib import Path
+import sys
+
+conf = Path(sys.argv[1])
+lines = conf.read_text().splitlines()
+
+# Keep the script idempotent by removing any old /ssh/ location first,
+# including accidental insertions into non-HTTPS server blocks.
+clean = []
+i = 0
+while i < len(lines):
+    if "location ^~ /ssh/" in lines[i]:
+        depth = 0
+        while i < len(lines):
+            depth += lines[i].count("{") - lines[i].count("}")
+            i += 1
+            if depth <= 0:
+                break
+        continue
+    clean.append(lines[i])
+
+location = [
+    "    location ^~ /ssh/ {",
+    "        proxy_pass http://127.0.0.1:6112/;",
+    "        proxy_http_version 1.1;",
+    "        proxy_set_header Host $host;",
+    "        proxy_set_header X-Real-IP $remote_addr;",
+    "        proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;",
+    "        proxy_set_header X-Forwarded-Proto $scheme;",
+    "        proxy_read_timeout 120s;",
+    "        proxy_send_timeout 120s;",
+    "    }",
+    "",
+]
+
+inside_cloud_ssl = False
+inserted = False
+out = []
+for line in clean:
+    if line.strip() == "server":
+        inside_cloud_ssl = False
+    if "server_name cloud.yaochuang.tech;" in line:
+        recent = "\n".join(out[-8:] + [line])
+        inside_cloud_ssl = "listen 443" in recent
+    if inside_cloud_ssl and not inserted and line.strip() == "location = / {":
+        out.extend(location)
+        inserted = True
+    out.append(line)
+
+if not inserted:
+    raise SystemExit("failed to insert /ssh/ location into cloud.yaochuang.tech ssl server block")
+
+backup = conf.with_name(f"{conf.name}.bak")
+backup.write_text(conf.read_text())
+conf.write_text("\n".join(out) + "\n")
+PY
 
 /www/server/nginx/sbin/nginx -t
 /www/server/nginx/sbin/nginx -s reload
