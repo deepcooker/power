@@ -1,0 +1,79 @@
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+    <title>灵渠 H5 SSH</title>
+    <link rel="stylesheet" href="/assets/styles.css" />
+  </head>
+  <body>
+    <main id="app" class="app login">
+      <section class="login-card">
+        <div class="brand">灵渠 H5 SSH</div>
+        <p>输入 SSH 目标后进入手机工作台。登录成功会保留 session，下次直接进入。</p>
+        <label>
+          <span>SSH</span>
+          <input id="sshTarget" placeholder="root@47.103.49.82 或 ssh -p 22 root@ip" autocomplete="off" />
+        </label>
+        <label>
+          <span>目录</span>
+          <input id="loginCwd" value="~" autocomplete="off" />
+        </label>
+        <button id="loginBtn">登录 SSH</button>
+        <div id="loginError" class="error hidden"></div>
+        <small>需要服务器已配置免密登录。切换主机会清除当前 session。</small>
+      </section>
+    </main>
+
+    <template id="workspaceTemplate">
+      <header class="topbar">
+        <div>
+          <strong>灵渠工作台</strong>
+          <span id="sessionLabel"></span>
+        </div>
+        <button id="switchHostBtn">切换主机</button>
+      </header>
+      <section class="path-card">
+        <span>当前目录</span>
+        <strong id="cwdText">~</strong>
+      </section>
+      <nav class="tabs">
+        <button data-tab="terminal" class="active">命令行</button>
+        <button data-tab="files">文件</button>
+      </nav>
+      <section id="errorBox" class="error hidden"></section>
+      <section id="terminalPanel" class="panel">
+        <label class="field">
+          <span>工作目录</span>
+          <input id="cwdInput" value="~" />
+        </label>
+        <textarea id="commandInput" rows="4">pwd && ls -la</textarea>
+        <div class="chips">
+          <button data-command="ls -lah">ls -lah</button>
+          <button data-command="pwd">pwd</button>
+          <button data-command="df -h">df -h</button>
+          <button data-command="free -h">free -h</button>
+          <button data-command="ps aux | head">ps aux | head</button>
+        </div>
+        <button id="runBtn" class="primary">执行命令</button>
+        <div id="terminalHistory" class="terminal-history">
+          <div class="empty">像 Jupyter Terminal 一样在手机上执行 SSH 命令。</div>
+        </div>
+      </section>
+      <section id="filesPanel" class="panel hidden">
+        <div class="path-row">
+          <input id="filePathInput" value="~" />
+          <button id="openPathBtn">打开</button>
+        </div>
+        <button id="parentBtn" class="secondary hidden">返回上级</button>
+        <div id="fileList" class="file-list"></div>
+        <article id="filePreview" class="file-preview hidden">
+          <header><b id="previewPath"></b><button id="closePreviewBtn">关闭</button></header>
+          <pre id="previewContent"></pre>
+        </article>
+      </section>
+    </template>
+
+    <script src="/assets/app.js"></script>
+  </body>
+</html>
