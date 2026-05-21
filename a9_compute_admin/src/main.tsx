@@ -410,14 +410,13 @@ async function mobileApi<T>(url: string, init?: RequestInit): Promise<T> {
 }
 
 function MobileConsolePage() {
-  const [sshTarget, setSshTarget] = useState(() => window.localStorage.getItem('lingqu_mobile_ssh') || '');
-  const [connected, setConnected] = useState(() => Boolean(window.localStorage.getItem('lingqu_mobile_ssh')));
   const [tab, setTab] = useState<'terminal' | 'files'>('terminal');
-  const [cwd, setCwd] = useState(() => window.localStorage.getItem('lingqu_mobile_cwd') || '~');
+  const [cwd, setCwd] = useState('.');
   const [command, setCommand] = useState('pwd && ls -la');
+  const [target, setTarget] = useState<'local' | 'ssh'>('local');
   const [running, setRunning] = useState(false);
   const [history, setHistory] = useState<MobileTerminalResult[]>([]);
-  const [filePath, setFilePath] = useState(() => window.localStorage.getItem('lingqu_mobile_cwd') || '~');
+  const [filePath, setFilePath] = useState('.');
   const [files, setFiles] = useState<MobileFileItem[]>([]);
   const [parent, setParent] = useState<string | null>(null);
   const [root, setRoot] = useState('');
@@ -427,10 +426,9 @@ function MobileConsolePage() {
   const loadFiles = async (path = filePath) => {
     setError('');
     try {
-      const data = await mobileApi<{ path: string; root: string; parent: string | null; items: MobileFileItem[] }>(`/api/mobile/files?target=${encodeURIComponent(sshTarget)}&path=${encodeURIComponent(path)}`);
+      const data = await mobileApi<{ path: string; root: string; parent: string | null; items: MobileFileItem[] }>(`/api/mobile/files?path=${encodeURIComponent(path)}`);
       setFilePath(data.path);
       setCwd(data.path);
-      window.localStorage.setItem('lingqu_mobile_cwd', data.path);
       setRoot(data.root);
       setParent(data.parent);
       setFiles(data.items);
@@ -441,32 +439,8 @@ function MobileConsolePage() {
   };
 
   useEffect(() => {
-    if (connected) {
-      void loadFiles(filePath);
-    }
-  }, [connected]);
-
-  const loginSsh = async () => {
-    setRunning(true);
-    setError('');
-    try {
-      const result = await mobileApi<MobileTerminalResult>('/api/mobile/terminal/run', {
-        method: 'POST',
-        body: JSON.stringify({ command: 'pwd', cwd, target: sshTarget }),
-      });
-      if (result.exit_code !== 0) {
-        throw new Error(result.stderr || 'ssh login failed');
-      }
-      window.localStorage.setItem('lingqu_mobile_ssh', sshTarget);
-      window.localStorage.setItem('lingqu_mobile_cwd', cwd);
-      setConnected(true);
-      setHistory([result]);
-    } catch (err) {
-      setError(String(err));
-    } finally {
-      setRunning(false);
-    }
-  };
+    void loadFiles('.');
+  }, []);
 
   const runCommand = async () => {
     setRunning(true);
@@ -474,12 +448,11 @@ function MobileConsolePage() {
     try {
       const result = await mobileApi<MobileTerminalResult>('/api/mobile/terminal/run', {
         method: 'POST',
-        body: JSON.stringify({ command, cwd, target: sshTarget }),
+        body: JSON.stringify({ command, cwd, target }),
       });
       setHistory((items) => [result, ...items].slice(0, 20));
       setCwd(result.cwd);
       setFilePath(result.cwd);
-      window.localStorage.setItem('lingqu_mobile_cwd', result.cwd);
     } catch (err) {
       setError(String(err));
     } finally {
@@ -490,7 +463,7 @@ function MobileConsolePage() {
   const readFile = async (path: string) => {
     setError('');
     try {
-      const data = await mobileApi<{ path: string; content: string }>(`/api/mobile/files/read?target=${encodeURIComponent(sshTarget)}&path=${encodeURIComponent(path)}`);
+      const data = await mobileApi<{ path: string; content: string }>(`/api/mobile/files/read?path=${encodeURIComponent(path)}`);
       setPreview(data);
       setTab('files');
     } catch (err) {
@@ -499,42 +472,17 @@ function MobileConsolePage() {
   };
 
   const quickCommands = ['ls -lah', 'pwd', 'df -h', 'free -h', 'ps aux | head'];
-  const logoutSsh = () => {
-    window.localStorage.removeItem('lingqu_mobile_ssh');
-    window.localStorage.removeItem('lingqu_mobile_cwd');
-    setConnected(false);
-    setHistory([]);
-    setFiles([]);
-    setPreview(undefined);
-    setError('');
-  };
-
-  if (!connected) {
-    return (
-      <main className="mobile-console-page login">
-        <section className="mobile-login-card">
-          <strong>灵渠 H5 SSH</strong>
-          <p>第一次输入 SSH 目标，后续保留会话，像手机端 Jupyter 一样直接回到控制台。</p>
-          <label><span>SSH</span><input value={sshTarget} onChange={(event) => setSshTarget(event.target.value)} placeholder="root@47.103.49.82 或 ssh -p 22 root@ip" /></label>
-          <label><span>目录</span><input value={cwd} onChange={(event) => setCwd(event.target.value)} placeholder="~" /></label>
-          {error && <div className="mobile-console-error">{error}</div>}
-          <button className="mobile-login-button" onClick={loginSsh} disabled={running || !sshTarget.trim()}>{running ? '连接中...' : '登录 SSH'}</button>
-          <small>需要服务器已配置免密登录；切换主机会清除当前会话。</small>
-        </section>
-      </main>
-    );
-  }
 
   return (
     <main className="mobile-console-page">
       <header className="mobile-console-head">
         <div><strong>灵渠 H5 控制台</strong><span>手机端命令行 / 文件块</span></div>
-        <button onClick={logoutSsh}>切换主机</button>
+        <a href="/compute">退出</a>
       </header>
       <section className="mobile-status-card">
         <span>当前目录</span>
         <strong>{cwd}</strong>
-        <small>{sshTarget} · {root || 'remote'}</small>
+        <small>{target === 'ssh' ? 'SSH target via MOBILE_SSH_TARGET' : root || 'workspace'}</small>
       </section>
       <nav className="mobile-console-tabs">
         <button className={tab === 'terminal' ? 'active' : ''} onClick={() => setTab('terminal')}>命令行</button>
@@ -544,6 +492,10 @@ function MobileConsolePage() {
       {tab === 'terminal' && (
         <section className="mobile-terminal-panel">
           <label><span>工作目录</span><input value={cwd} onChange={(event) => setCwd(event.target.value)} /></label>
+          <div className="mobile-target-switch">
+            <button className={target === 'local' ? 'active' : ''} onClick={() => setTarget('local')}>本机</button>
+            <button className={target === 'ssh' ? 'active' : ''} onClick={() => setTarget('ssh')}>SSH</button>
+          </div>
           <textarea value={command} onChange={(event) => setCommand(event.target.value)} rows={4} />
           <div className="mobile-command-chips">{quickCommands.map((item) => <button key={item} onClick={() => setCommand(item)}>{item}</button>)}</div>
           <button className="mobile-run-button" onClick={runCommand} disabled={running}>{running ? '执行中...' : '执行命令'}</button>
