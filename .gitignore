@@ -1,5 +1,6 @@
 # Dependencies
 node_modules/
+mobile_ssh_console/venv/
 
 # Build output
 dist/
