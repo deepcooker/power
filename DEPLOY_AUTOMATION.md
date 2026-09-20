@@ -66,6 +66,7 @@ ssh root@47.103.49.82 'hostname && whoami'
 - HTTPS 证书：`/www/server/panel/vhost/letsencrypt/yaochuang.tech/`
 - 证书域名：`yaochuang.tech`、`www.yaochuang.tech`、`cloud.yaochuang.tech`
 - 宝塔 ACME 自动续期任务：`/www/server/panel/class/acme_v2.py --renew=1`
+- 独立域名证书续签脚本：`/www/server/cron/renew_yaochuang_cert.sh`（避免手工 Nginx 站点被宝塔续签逻辑跳过）
 
 ## 手动发布命令
 

@@ -1,0 +1,11 @@
+@font-face {
+  font-family: "Endpoints Noto Sans SC";
+  src: url('/compute/fonts/endpoints-zh.woff2') format('woff2');
+  font-weight: 400 700;
+  font-style: normal;
+  font-display: swap;
+}
+
+.ep-page {
+  font-family: "Endpoints Noto Sans SC", Inter, "PingFang SC", "Microsoft YaHei", sans-serif;
+}

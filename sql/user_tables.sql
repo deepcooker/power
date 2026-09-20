@@ -1,0 +1,40 @@
+CREATE TABLE IF NOT EXISTS `cd_sp_user` (
+  `sp_user_id` int NOT NULL AUTO_INCREMENT COMMENT '编号',
+  `sp_id` smallint DEFAULT NULL COMMENT '渠道id',
+  `user_name` varchar(250) DEFAULT NULL COMMENT '用户名',
+  `pwd` varchar(250) DEFAULT NULL COMMENT '密码',
+  `create_time` datetime DEFAULT NULL COMMENT '创建时间',
+  `email` varchar(250) DEFAULT NULL COMMENT '邮箱',
+  `token` varchar(250) DEFAULT NULL COMMENT 'token',
+  `status` smallint DEFAULT '1' COMMENT '状态 , 已认证-1 ; 禁用-0 ; 锁定--1 ;',
+  `err_login` int DEFAULT NULL COMMENT '错误登录',
+  `last_login_time` datetime DEFAULT NULL COMMENT '最近登录时间',
+  `source_pwd` varchar(250) DEFAULT 'source_pwd' COMMENT '原始密码',
+  `update_time` datetime DEFAULT NULL COMMENT '更新时间',
+  `head_url` varchar(250) DEFAULT NULL COMMENT '头像',
+  `nick_name` varchar(255) DEFAULT NULL COMMENT '昵称',
+  `short_code` varchar(255) DEFAULT NULL COMMENT '当前账号的邀请码',
+  `invitation_code` varchar(255) DEFAULT NULL COMMENT '邀请人的短码',
+  `user_level` smallint DEFAULT '1' COMMENT '等级 , 普通用户-1 ; 会员用户-2 ; 黄金用户-3 ; 铂金用户-4 ; 钻石用户-5 ;',
+  `memo` tinytext COMMENT '个人介绍',
+  `mobile` varchar(50) DEFAULT NULL COMMENT '手机号',
+  `agent_level` smallint DEFAULT '1' COMMENT '代理等级 , L1-1 ; L2-2 ; L3-3 ; L4-4 ; L5-5 ;',
+  `total_sy` decimal(10,2) DEFAULT NULL COMMENT '累计收益',
+  `month_sy` decimal(10,2) DEFAULT NULL COMMENT '本月收益',
+  `invate_num` int DEFAULT NULL COMMENT '邀请人数',
+  `monthly_add` int DEFAULT NULL COMMENT '月新增',
+  `changed` decimal(10,2) DEFAULT NULL COMMENT '转化率',
+  `agent_fee` decimal(10,2) DEFAULT NULL COMMENT '佣金',
+  `qr_code` varchar(250) DEFAULT NULL COMMENT '推广码',
+  `pay_wallet` varchar(250) DEFAULT NULL COMMENT '订阅钱包',
+  `is_whitelist_skip` smallint DEFAULT NULL COMMENT '验证白名单  , 否-0 ; 是-1 ;',
+  PRIMARY KEY (`sp_user_id`),
+  UNIQUE KEY `email` (`email`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+
+CREATE TABLE IF NOT EXISTS `cd_verification_code` (
+  `verify_id` varchar(250) NOT NULL COMMENT '验证id',
+  `verification_code` varchar(10) DEFAULT NULL COMMENT '验证码',
+  `update_time` datetime DEFAULT NULL COMMENT '更新时间',
+  PRIMARY KEY (`verify_id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;

@@ -1,0 +1,188 @@
+{
+  "started_at": "2026-05-26T16:59:16.826364Z",
+  "deployment_name": "lingqu-live-tmp-share-matrix-20260527",
+  "deployment_uuid": "3e9f90e84d",
+  "marker": "/root/autodl-tmp/lingqu_live_tmp_share_marker_20260527.txt",
+  "events": [
+    {
+      "step": "create_deployment",
+      "at": "2026-05-26T16:59:17.367696Z",
+      "payload": {
+        "name": "lingqu-live-tmp-share-matrix-20260527",
+        "deployment_type": "ReplicaSet",
+        "replica_num": 1,
+        "reuse_container": true,
+        "reuse_container_scope": "all",
+        "container_template": {
+          "gpu_name_set": [
+            "RTX 3090"
+          ],
+          "gpu_num": 1,
+          "cuda_v_from": 118,
+          "cuda_v_to": 128,
+          "cpu_num_from": 1,
+          "cpu_num_to": 256,
+          "memory_size_from": 1,
+          "memory_size_to": 256,
+          "cmd": "grep -q '/root/miniconda3/bin' /root/.bashrc || echo 'export PATH=/root/miniconda3/bin:$PATH' >> /root/.bashrc; sleep infinity",
+          "price_from": 0,
+          "price_to": 9000,
+          "image_uuid": "base-image-l2t43iu6uk",
+          "dc_list": [
+            "neimengDC3"
+          ]
+        }
+      },
+      "response": {
+        "code": "Success",
+        "data": {
+          "deployment_uuid": "3e9f90e84d"
+        },
+        "msg": "",
+        "request_id": "2e205ea1f0ddf0b480f86d16ced3efd1"
+      },
+      "deployment_uuid": "3e9f90e84d"
+    },
+    {
+      "step": "write_marker",
+      "at": "2026-05-26T16:59:39.456367Z",
+      "container": "591d3d4831-e07941848a-aabd1c100f-1510d7411",
+      "content": "label=initial_writer_before_scale container=591d3d4831-e07941848a-aabd1c100f-1510d7411 at=2026-05-26T16:59:38.384150Z"
+    },
+    {
+      "step": "scale",
+      "at": "2026-05-26T16:59:40.165542Z",
+      "deployment_uuid": "3e9f90e84d",
+      "replica_num": 3,
+      "response": {
+        "code": "Success",
+        "data": {
+          "deployment_uuid": "3e9f90e84d"
+        },
+        "msg": "",
+        "request_id": "43ec7ae438e58f805285e3f94089a345"
+      }
+    },
+    {
+      "step": "live_scale_running_trio",
+      "at": "2026-05-26T17:00:43.248093Z",
+      "containers": [
+        "3e9f90e84d-e07941848a-2d0c3f4fb3",
+        "23d5d82d60-e07941848a-fa717f7abc-deef1d3c2",
+        "591d3d4831-e07941848a-aabd1c100f-1510d7411"
+      ]
+    },
+    {
+      "step": "check_marker",
+      "at": "2026-05-26T17:00:44.324301Z",
+      "label": "LIVE_REPLICA_1",
+      "container": "3e9f90e84d-e07941848a-2d0c3f4fb3"
+    },
+    {
+      "step": "check_marker",
+      "at": "2026-05-26T17:00:45.450802Z",
+      "label": "LIVE_REPLICA_2",
+      "container": "23d5d82d60-e07941848a-fa717f7abc-deef1d3c2"
+    },
+    {
+      "step": "check_marker",
+      "at": "2026-05-26T17:00:46.524558Z",
+      "label": "LIVE_REPLICA_3",
+      "container": "591d3d4831-e07941848a-aabd1c100f-1510d7411"
+    },
+    {
+      "step": "stop_container",
+      "at": "2026-05-26T17:00:47.198123Z",
+      "label": "phase1_stop_1",
+      "container": "3e9f90e84d-e07941848a-2d0c3f4fb3",
+      "no_cache": null,
+      "response": {
+        "code": "Success",
+        "data": null,
+        "msg": "",
+        "request_id": "c85c8dd156652b3ccd6dd987bf9da8eb"
+      }
+    },
+    {
+      "step": "stop_container",
+      "at": "2026-05-26T17:00:55.795528Z",
+      "label": "phase1_stop_2",
+      "container": "23d5d82d60-e07941848a-fa717f7abc-deef1d3c2",
+      "no_cache": false,
+      "response": {
+        "code": "Success",
+        "data": null,
+        "msg": "",
+        "request_id": "39bdf5b937b1c3b235a132e1f6aa6fc4"
+      }
+    },
+    {
+      "step": "stop_container",
+      "at": "2026-05-26T17:01:04.415083Z",
+      "label": "phase1_stop_3",
+      "container": "591d3d4831-e07941848a-aabd1c100f-1510d7411",
+      "no_cache": true,
+      "response": {
+        "code": "Success",
+        "data": null,
+        "msg": "",
+        "request_id": "854e1a041a1cbcd319070a14d2389236"
+      }
+    },
+    {
+      "step": "scale",
+      "at": "2026-05-26T17:01:13.005095Z",
+      "deployment_uuid": "3e9f90e84d",
+      "replica_num": 2,
+      "response": {
+        "code": "Success",
+        "data": {
+          "deployment_uuid": "3e9f90e84d"
+        },
+        "msg": "",
+        "request_id": "31d92051ebaa56f75337789a582ba22c"
+      }
+    },
+    {
+      "step": "restart_two_running",
+      "at": "2026-05-26T17:01:56.569859Z",
+      "containers": [
+        "591d3d4831-e07941848a-aabd1c100f-4dcce5d17",
+        "3e9f90e84d-67194fac87-80a7e8dde3"
+      ]
+    },
+    {
+      "step": "check_marker",
+      "at": "2026-05-26T17:01:57.619423Z",
+      "label": "RESTART_REPLICA_1",
+      "container": "591d3d4831-e07941848a-aabd1c100f-4dcce5d17"
+    },
+    {
+      "step": "check_marker",
+      "at": "2026-05-26T17:01:58.724749Z",
+      "label": "RESTART_REPLICA_2",
+      "container": "3e9f90e84d-67194fac87-80a7e8dde3"
+    }
+  ],
+  "cleanup": [
+    {
+      "container": "591d3d4831-e07941848a-aabd1c100f-4dcce5d17",
+      "response": {
+        "code": "Success",
+        "data": null,
+        "msg": "",
+        "request_id": "2d2bd0fdce1c64167c974059eccb1a12"
+      }
+    },
+    {
+      "container": "3e9f90e84d-67194fac87-80a7e8dde3",
+      "response": {
+        "code": "Success",
+        "data": null,
+        "msg": "",
+        "request_id": "9ceca7459a1143c6a9d7992708af1fb8"
+      }
+    }
+  ],
+  "finished_at": "2026-05-26T17:02:00.455016Z"
+}

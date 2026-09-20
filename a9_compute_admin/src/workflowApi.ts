@@ -12,6 +12,96 @@ export type WorkflowTemplate = {
   tags: string[];
 };
 
+export type WorkflowMineItem = WorkflowTemplate & {
+  status: string;
+  version: string;
+  visibility: string;
+  monthlyRevenue: number;
+  auditNote: string;
+};
+
+export type WorkflowMineSummary = {
+  revenue: number;
+  published: number;
+  drafts: number;
+  auditing: number;
+  rating: number;
+};
+
+export type WorkflowCreatePayload = {
+  templateId: string;
+  title: string;
+  category: string;
+  visibility: 'private' | 'public_review';
+  source?: string;
+};
+
+export type WorkflowVersion = {
+  version: string;
+  status: string;
+  createdAt: string;
+  note: string;
+};
+
+export type WorkflowSharePayload = {
+  templateId: string;
+  permission: 'run' | 'copy' | 'preview';
+  expiresInDays: number;
+};
+
+export type WorkflowShareResult = {
+  templateId: string;
+  title: string;
+  permission: string;
+  expiresInDays: number;
+  url: string;
+  visits: number;
+  conversion: string;
+};
+
+export type WorkflowPublishPayload = {
+  runId?: string;
+  templateId: string;
+  title: string;
+  destination: string;
+  cover: string;
+  tags: string[];
+  prompt: string;
+  ratio: string;
+  quality: string;
+};
+
+export type WorkflowPublishResult = WorkflowPublishPayload & {
+  id: string;
+  templateTitle: string;
+  status: string;
+  publishedAt: string;
+  url: string;
+};
+
+export type WorkflowCase = {
+  id: string;
+  templateId: string;
+  title: string;
+  summary: string;
+  outputText: string;
+  prompt: string;
+  ratio: string;
+  quality: string;
+  publishedAt: string;
+};
+
+export type WorkflowApiSchema = {
+  templateId: string;
+  title: string;
+  mode: WorkflowMode;
+  endpoint: string;
+  method: string;
+  headers: Record<string, string>;
+  fields: Array<{ name: string; type: string; required: boolean; default?: string; options?: Array<string | number> }>;
+  estimate: { endpoint: string; currency: string };
+};
+
 export type WorkflowRunStatus = 'queued' | 'running' | 'succeeded' | 'failed';
 
 export type WorkflowRunRecord = {
@@ -242,7 +332,39 @@ export async function createWorkflowRun(payload: WorkflowRunPayload): Promise<Wo
 
 export const workflowApi = {
   templates: () => workflowJson<{ items: WorkflowTemplate[] }>('/api/workflows/templates'),
+  template: (templateId: string) => workflowJson<{ item: WorkflowTemplate; related: WorkflowTemplate[] }>(`/api/workflows/templates/${templateId}`),
+  cases: (templateId: string) => workflowJson<{ items: WorkflowCase[] }>(`/api/workflows/templates/${templateId}/cases`),
+  apiSchema: (templateId: string) => workflowJson<WorkflowApiSchema>(`/api/workflows/templates/${templateId}/api-schema`),
+  mine: () => workflowJson<{ items: WorkflowMineItem[]; summary: WorkflowMineSummary }>('/api/workflows/mine'),
+  createTemplate: (payload: WorkflowCreatePayload) =>
+    workflowJson<WorkflowMineItem>('/api/workflows/mine', {
+      method: 'POST',
+      body: JSON.stringify(payload),
+    }),
+  updateTemplateStatus: (templateId: string, status: string) =>
+    workflowJson<WorkflowMineItem>(`/api/workflows/mine/${templateId}/status`, {
+      method: 'PATCH',
+      body: JSON.stringify({ status }),
+    }),
+  versions: (templateId: string) => workflowJson<{ items: WorkflowVersion[] }>(`/api/workflows/mine/${templateId}/versions`),
+  share: (payload: WorkflowSharePayload) =>
+    workflowJson<WorkflowShareResult>('/api/workflows/mine/share', {
+      method: 'POST',
+      body: JSON.stringify(payload),
+    }),
   runs: () => workflowJson<{ items: WorkflowRunRecord[] }>('/api/workflows/runs'),
+  exportRuns: () => workflowJson<{ filename: string; items: WorkflowRunRecord[] }>('/api/workflows/runs/export'),
+  deleteRuns: (ids: string[]) =>
+    workflowJson<{ deleted: number; items: WorkflowRunRecord[] }>('/api/workflows/runs/delete', {
+      method: 'POST',
+      body: JSON.stringify({ ids }),
+    }),
+  publish: (payload: WorkflowPublishPayload) =>
+    workflowJson<WorkflowPublishResult>('/api/workflows/publish', {
+      method: 'POST',
+      body: JSON.stringify(payload),
+    }),
+  run: (runId: string) => workflowJson<{ item: WorkflowRunRecord }>(`/api/workflows/runs/${runId}`),
   estimate: (payload: WorkflowRunPayload) =>
     workflowJson<WorkflowCostEstimate>('/api/workflows/estimate', {
       method: 'POST',
